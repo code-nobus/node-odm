@@ -1,0 +1,100 @@
+{
+    "name": "@nobus/odm",
+    "description": "",
+    "version": "0.0.0-development",
+    "license": "MIT",
+    "keywords": [],
+    "repository": "https://github.com/code-nobus/node-odm.git",
+    "files": [
+        "dist/"
+    ],
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "dependencies": {
+        "@sirian/common": "^4.22.1",
+        "@sirian/decorators": "^1.0.8",
+        "@sirian/error": "^1.0.0",
+        "@sirian/ts-extra-types": "^3.9.0",
+        "bson": "^4.0.1"
+    },
+    "devDependencies": {
+        "@types/bson": "^1.0.11",
+        "@types/jest": "^23.3.12",
+        "@types/mongodb": "^3.1.18",
+        "@types/node": "^10.12.18",
+        "@types/reflect-metadata": "^0.1.0",
+        "@types/sprintf-js": "^1.1.1",
+        "coveralls": "^3.0.2",
+        "husky": "^1.2.1",
+        "jest": "^23.6.0",
+        "rimraf": "^2.6.2",
+        "semantic-release": "^15.13.1",
+        "travis-deploy-once": "^5.0.11",
+        "ts-jest": "^23.10.5",
+        "ts-node": "^7.0.1",
+        "tslint": "^5.12.0",
+        "typescript": "^3.2.2"
+    },
+    "scripts": {
+        "ci:build": "yarn clean && yarn lint && yarn test && yarn build",
+        "clean": "yarn build:clean; yarn test:clean",
+        "build": "yarn build:clean && tsc",
+        "build:clean": "rimraf dist",
+        "build:watch": "yarn build --watch",
+        "lint": "yarn tslint:lint",
+        "lint:fix": "yarn tslint:fix",
+        "tslint:lint": "tslint '{src,tests}/**/*'",
+        "tslint:fix": "yarn tslint:lint --fix",
+        "test": "yarn test:clean && jest --coverage",
+        "test:clean": "rimraf coverage",
+        "test:watch": "jest --watch"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "yarn lint"
+        }
+    },
+    "release": {
+        "branch": "master",
+        "analyzeCommits": {
+            "releaseRules": [
+                {
+                    "type": "patch",
+                    "release": "patch"
+                },
+                {
+                    "type": "fix",
+                    "release": "patch"
+                },
+                {
+                    "type": "minor",
+                    "release": "minor"
+                },
+                {
+                    "type": "major",
+                    "release": "major"
+                }
+            ]
+        }
+    },
+    "publishConfig": {
+        "tag": "latest",
+        "access": "public"
+    },
+    "jest": {
+        "roots": [
+            "<rootDir>/tests"
+        ],
+        "testEnvironment": "node",
+        "transform": {
+            "^.+\\.ts$": "ts-jest"
+        },
+        "testRegex": "/test[^/]*\\.tsx?$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "json",
+            "js"
+        ]
+    }
+}
