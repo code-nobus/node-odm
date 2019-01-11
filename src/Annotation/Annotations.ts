@@ -20,7 +20,7 @@ export class Annotations<T extends object> {
     }
 
     public static add(annotation: Annotation) {
-        const instance = Annotations.classMap.ensure(annotation.ctor);
+        const instance = Annotations.classMap.ensure(annotation.class);
 
         const key = annotation.registryKey;
 
