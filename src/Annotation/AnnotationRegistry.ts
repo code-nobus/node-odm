@@ -1,20 +1,20 @@
 import {XMap} from "@sirian/common";
+import {Ctor} from "@sirian/ts-extra-types";
 import {Annotation} from "./Annotation";
 
 export class AnnotationRegistry {
-    protected map: XMap<typeof Annotation, Annotation[]>;
+    protected map: XMap<Ctor<Annotation>, Annotation[]>;
 
     constructor() {
         this.map = new XMap(() => []);
     }
 
     public add(meta: Annotation) {
-        const ctor = meta.constructor as typeof Annotation;
+        const ctor = meta.constructor as Ctor<Annotation>;
         this.map.ensure(ctor).push(meta);
     }
 
-    public get<M extends typeof Annotation>(ctor: M) {
-        const items = this.map.get(ctor) || [];
-        return [...items] as Array<InstanceType<M>>;
+    public get<M extends Ctor<Annotation>>(ctor: M) {
+        return this.map.get(ctor) as ReadonlyArray<InstanceType<M>> | undefined;
     }
 }

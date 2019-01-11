@@ -10,4 +10,8 @@ export class PropertyAnnotation extends Annotation {
         this.proto = proto;
         this.propertyKey = propertyKey;
     }
+
+    public get registryKey() {
+        return this.propertyKey;
+    }
 }

@@ -6,7 +6,7 @@ function check(ctor: any, options: any) {
     expect(Annotations.get(DocumentAnnotation, ctor)).toStrictEqual([expected]);
 }
 
-test("", () => {
+test("@ODM.document", () => {
     @ODM.document
     class User {
     }
@@ -14,7 +14,7 @@ test("", () => {
     check(User, {});
 });
 
-test("", () => {
+test("@ODM.document()", () => {
     @ODM.document()
     class User {
     }
@@ -22,7 +22,7 @@ test("", () => {
     check(User, {});
 });
 
-test("", () => {
+test(`@ODM.document({collection: "users"})`, () => {
     @ODM.document({collection: "users"})
     class User {
     }

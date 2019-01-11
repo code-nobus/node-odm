@@ -6,18 +6,16 @@ test("", () => {
 
     }
 
-    @ODM.document
+    @ODM.document({collection: "bar"})
     class Bar extends Foo {
         @ODM.field
         protected name?: string;
     }
 
-    const fooMeta = Annotations.get(DocumentAnnotation, Foo);
-    const barMeta = Annotations.get(DocumentAnnotation, Bar);
-
     const fooDoc = new DocumentAnnotation(Foo);
-    const barDoc = new DocumentAnnotation(Bar);
-    expect(fooMeta).toStrictEqual([fooDoc]);
-    expect(barMeta).toStrictEqual([fooDoc, barDoc]);
+    const barDoc = new DocumentAnnotation(Bar, {collection: "bar"});
+
+    expect(Annotations.get(DocumentAnnotation, Foo)).toStrictEqual([fooDoc]);
+    expect(Annotations.get(DocumentAnnotation, Bar)).toStrictEqual([fooDoc, barDoc]);
 
 });

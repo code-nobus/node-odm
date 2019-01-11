@@ -11,12 +11,9 @@ test("", () => {
         protected name?: string;
     }
 
-    const fooMeta = Annotations.get(FieldAnnotation, Foo, "name");
-    const barMeta = Annotations.get(FieldAnnotation, Bar, "name");
+    const fooAnnotation = new FieldAnnotation(Foo.prototype, "name", {name: "foo", nullable: true});
+    const barAnnotation = new FieldAnnotation(Bar.prototype, "name");
 
-    const fooField = new FieldAnnotation(Foo.prototype, "name", {name: "foo", nullable: true});
-    const barField = new FieldAnnotation(Bar.prototype, "name");
-
-    expect(fooMeta).toStrictEqual([fooField]);
-    expect(barMeta).toStrictEqual([fooField, barField]);
+    expect(Annotations.get(FieldAnnotation, Foo, "name")).toStrictEqual([fooAnnotation]);
+    expect(Annotations.get(FieldAnnotation, Bar, "name")).toStrictEqual([fooAnnotation, barAnnotation]);
 });

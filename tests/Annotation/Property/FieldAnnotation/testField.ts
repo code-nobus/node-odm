@@ -6,7 +6,7 @@ function check(ctor: any, options: any) {
     expect(Annotations.get(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
 }
 
-test("", () => {
+test("@ODM.field", () => {
     class User {
         @ODM.field
         protected foo?: string;
@@ -15,7 +15,7 @@ test("", () => {
     check(User, {});
 });
 
-test("", () => {
+test("@ODM.field()", () => {
     class User {
         @ODM.field()
         protected foo?: string;
@@ -24,7 +24,7 @@ test("", () => {
     check(User, {});
 });
 
-test("", () => {
+test(`@ODM.field({name: "bar", nullable: true})`, () => {
     class User {
         @ODM.field({name: "bar", nullable: true})
         protected foo?: string;
