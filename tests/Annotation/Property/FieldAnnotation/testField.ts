@@ -1,10 +1,9 @@
-import {ClassMetadata, Field, ODM} from "../../../src";
+import {Annotations, FieldAnnotation, ODM} from "../../../../src";
 
 function check(ctor: any, options: any) {
-    const classMetadata = ClassMetadata.get(ctor);
-    const expected = new Field(ctor.prototype, "foo", options);
+    const expected = new FieldAnnotation(ctor.prototype, "foo", options);
 
-    expect(classMetadata.getPropertyMeta("foo", Field)).toStrictEqual([expected]);
+    expect(Annotations.get(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
 }
 
 test("", () => {

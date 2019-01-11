@@ -1,7 +1,7 @@
 import {Decorator} from "@sirian/decorators";
-import {Document, Field} from "./Meta";
+import {DocumentAnnotation, FieldAnnotation} from "./Annotation";
 
 export const ODM = {
-    document: Decorator.forClass(Document.decorate),
-    field: Decorator.forProperty(Field.decorate),
+    document: Decorator.forClass(DocumentAnnotation.decorate),
+    field: Decorator.forProperty(FieldAnnotation.decorate),
 };

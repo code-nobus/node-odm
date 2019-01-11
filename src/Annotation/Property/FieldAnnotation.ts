@@ -1,9 +1,9 @@
 import {Str, Var} from "@sirian/common";
 import {InvalidArgumentError} from "@sirian/error";
 import {Args} from "@sirian/ts-extra-types";
-import {RawType} from "../Type";
-import {ClassMetadata} from "./ClassMetadata";
-import {PropertyMeta} from "./PropertyMeta";
+import {RawType} from "../../Type";
+import {Annotations} from "../Annotations";
+import {PropertyAnnotation} from "./PropertyAnnotation";
 
 export interface IFieldInit {
     name: string;
@@ -11,7 +11,7 @@ export interface IFieldInit {
     nullable: boolean;
 }
 
-export class Field extends PropertyMeta {
+export class FieldAnnotation extends PropertyAnnotation {
     public readonly name: string;
     public readonly type: any;
     public readonly nullable: boolean;
@@ -20,7 +20,7 @@ export class Field extends PropertyMeta {
         super(target, propertyKey);
         const name = opts.name || propertyKey;
 
-        if (!Field.isValidFieldName(name)) {
+        if (!FieldAnnotation.isValidFieldName(name)) {
             throw new InvalidArgumentError(`Field name "${Str.stringify(name)}" is invalid`);
         }
 
@@ -41,8 +41,8 @@ export class Field extends PropertyMeta {
     }
 
     public static decorate([proto, propertyKey]: Args<PropertyDecorator>, opts: Partial<IFieldInit> = {}) {
-        const meta = new Field(proto, propertyKey, opts);
+        const meta = new FieldAnnotation(proto, propertyKey, opts);
 
-        ClassMetadata.addMeta(meta);
+        Annotations.add(meta);
     }
 }

@@ -1,6 +1,6 @@
-import {Meta} from "./Meta";
+import {Annotation} from "../Annotation";
 
-export class PropertyMeta extends Meta {
+export class PropertyAnnotation extends Annotation {
     public readonly proto: object;
     public readonly propertyKey: PropertyKey;
 

@@ -1,4 +1,4 @@
-export class Meta {
+export class Annotation {
     public readonly ctor: Function;
 
     constructor(ctor: Function) {

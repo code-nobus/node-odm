@@ -1,12 +1,12 @@
 import {Args} from "@sirian/ts-extra-types";
-import {ClassMeta} from "./ClassMeta";
-import {ClassMetadata} from "./ClassMetadata";
+import {Annotations} from "../Annotations";
+import {ClassAnnotation} from "./ClassAnnotation";
 
 export interface IDocumentInit {
     collection: string;
 }
 
-export class Document extends ClassMeta {
+export class DocumentAnnotation extends ClassAnnotation {
     public readonly collection: string;
 
     constructor(ctor: Function, opts: Partial<IDocumentInit> = {}) {
@@ -16,8 +16,8 @@ export class Document extends ClassMeta {
     }
 
     public static decorate([proto]: Args<ClassDecorator>, opts: Partial<IDocumentInit> = {}) {
-        const meta = new Document(proto, opts);
+        const meta = new DocumentAnnotation(proto, opts);
 
-        ClassMetadata.addMeta(meta);
+        Annotations.add(meta);
     }
 }
