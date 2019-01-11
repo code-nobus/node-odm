@@ -1,31 +1,30 @@
 import {Var} from "@sirian/common";
-import {Annotations} from "../Annotation";
+import {Ctor} from "@sirian/ts-extra-types";
 import {DocumentManager} from "../DocumentManager";
+import {ODMDocOption} from "../ODM";
 
-class DocumentRepository<T> {
+export type RepositoryType<T extends Ctor> = InstanceType<ODMDocOption<T, "repositoryClass", Ctor<DocumentRepository<T>>>>;
+
+export class DocumentRepository<T> {
     public readonly dm: DocumentManager;
 
-    public readonly metadata: Annotations<T>;
+    public readonly documentClass: Ctor<T>;
 
-    public constructor(manager: DocumentManager, metadata: Annotations<T>) {
+    public constructor(manager: DocumentManager, documentClass: Ctor<T>) {
         this.dm = manager;
-        this.metadata = metadata;
-    }
-
-    public get target() {
-        return this.metadata.target;
+        this.documentClass = documentClass;
     }
 
     public get documentPersister() {
-        return this.dm.getDocumentPersister(this.target);
+        return this.dm.getDocumentPersister(this.documentClass);
     }
 
     public createQueryBuilder() {
-        return this.dm.createQueryBuilder(this.target);
+        return this.dm.createQueryBuilder(this.documentClass);
     }
 
     public createAggregationBuilder() {
-        return this.dm.createAggregationBuilder(this.target);
+        return this.dm.createAggregationBuilder(this.documentClass);
     }
 
     public find(id: any) {

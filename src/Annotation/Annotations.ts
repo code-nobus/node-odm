@@ -6,16 +6,15 @@ import {AnnotationRegistry} from "./AnnotationRegistry";
 import {ClassAnnotation} from "./Class";
 import {PropertyAnnotation} from "./Property";
 
-export class Annotations<T extends object> {
-    public static readonly classMap = new XMap((target) => new Annotations<object>(target));
+export class Annotations<T> {
+    public static readonly classMap = new XMap((target) => new Annotations<any>(target));
 
-    public readonly target: T;
+    public readonly class: T;
 
     protected readonly registries: XMap<PropertyKey, AnnotationRegistry>;
 
     constructor(target: T) {
-        this.target = target;
-
+        this.class = target;
         this.registries = new XMap(() => new AnnotationRegistry());
     }
 
