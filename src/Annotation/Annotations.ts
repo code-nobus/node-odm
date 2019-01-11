@@ -42,7 +42,6 @@ export class Annotations<T> {
             }
             const values = instance.get(meta, propertyKey);
             if (values) {
-
                 result.unshift(...values);
             }
         }
