@@ -1,10 +1,11 @@
+import {Ctor} from "@sirian/ts-extra-types";
 import {Annotation} from "../Annotation";
 
-export class PropertyAnnotation extends Annotation {
-    public readonly proto: object;
-    public readonly propertyKey: PropertyKey;
+export class PropertyAnnotation<C extends Ctor = Ctor, K extends keyof InstanceType<C> = keyof InstanceType<C>> extends Annotation<C> {
+    public readonly proto: InstanceType<C>;
+    public readonly propertyKey: K;
 
-    constructor(proto: object, propertyKey: PropertyKey) {
+    constructor(proto: InstanceType<C>, propertyKey: K) {
         super(proto.constructor);
 
         this.proto = proto;

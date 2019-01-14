@@ -1,8 +1,11 @@
-export abstract class Annotation {
-    public readonly class: Function;
-    public abstract registryKey: PropertyKey;
+import {Ctor} from "@sirian/ts-extra-types";
 
-    constructor(ctor: Function) {
-        this.class = ctor;
+export abstract class Annotation<C extends Ctor = Ctor> {
+    public readonly class: C;
+
+    constructor(target: C) {
+        this.class = target;
     }
+
+    public abstract get registryKey(): any;
 }

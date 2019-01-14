@@ -1,5 +1,6 @@
 import {Var} from "@sirian/common";
 import {Ctor} from "@sirian/ts-extra-types";
+import {FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
 import {ODMDocOption} from "../ODM";
 
@@ -15,16 +16,8 @@ export class DocumentRepository<T> {
         this.documentClass = documentClass;
     }
 
-    public get documentPersister() {
-        return this.dm.getDocumentPersister(this.documentClass);
-    }
-
     public createQueryBuilder() {
         return this.dm.createQueryBuilder(this.documentClass);
-    }
-
-    public createAggregationBuilder() {
-        return this.dm.createAggregationBuilder(this.documentClass);
     }
 
     public find(id: any) {
@@ -36,15 +29,18 @@ export class DocumentRepository<T> {
     }
 
     public findAll() {
-        return this.findBy({});
+        return this.findBy({}).toArray();
     }
 
-    public findBy(criteria: object, sort?: object, limit?: number, skip?: number) {
-        return this.documentPersister.loadAll(criteria, sort, limit, skip);
+    public findBy(query: object, options: Partial<FindOneOptions> = {}) {
+        return this.createQueryBuilder()
+            .setQuery(query)
+            .setOptions(options)
+            .getQuery();
     }
 
     public findOneBy(query: object) {
-        return this.documentPersister.load(query);
+        return this.findBy(query).getSingleResult();
     }
 
 }

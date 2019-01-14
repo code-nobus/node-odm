@@ -1,6 +1,6 @@
 import {Ref, Var, XMap} from "@sirian/common";
-import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
+import {BadMethodCallError} from "../Error";
 import {Annotation} from "./Annotation";
 import {AnnotationRegistry} from "./AnnotationRegistry";
 import {ClassAnnotation} from "./Class";
@@ -26,18 +26,18 @@ export class Annotations<T> {
         instance.registries.ensure(key).add(annotation);
     }
 
-    public static get<A extends Ctor<PropertyAnnotation>>(ctor: A, target: object, propertyKey: PropertyKey): Array<InstanceType<A>>;
-    public static get<A extends Ctor<ClassAnnotation>>(ctor: A, target: object): Array<InstanceType<A>>;
+    public static get<A extends Ctor<PropertyAnnotation>>(AnnotationClass: A, target: object, propertyKey: PropertyKey): Array<InstanceType<A>>;
+    public static get<A extends Ctor<ClassAnnotation>>(AnnotationClass: A, target: object): Array<InstanceType<A>>;
 
-    public static get<A extends Ctor<Annotation>>(ctor: A, target: object, propertyKey?: PropertyKey) {
+    public static get<A extends Ctor<Annotation>>(AnnotationClass: A, target: object, propertyKey?: PropertyKey) {
         const result: Array<InstanceType<A>> = [];
 
         for (const obj of Ref.getProtoChain(target)) {
-            const registry = Annotations.getRegistry(ctor, obj, propertyKey);
+            const registry = Annotations.getRegistry(AnnotationClass, obj, propertyKey);
             if (!registry) {
                 continue;
             }
-            const values = registry.get(ctor);
+            const values = registry.get(AnnotationClass);
             if (values) {
                 result.unshift(...values);
             }
@@ -47,28 +47,28 @@ export class Annotations<T> {
 
     }
 
-    protected static getRegistry<A extends Ctor<Annotation>>(ctor: A, target: object, propertyKey?: PropertyKey) {
+    protected static getRegistry<A extends Ctor<Annotation>>(AnnotationClass: A, target: object, propertyKey?: PropertyKey) {
         const instance = this.classMap.get(target);
         if (!instance) {
             return;
         }
 
-        const key = this.resolveRegistryKey(ctor, propertyKey);
+        const key = this.resolveRegistryKey(AnnotationClass, propertyKey);
         return instance.registries.get(key);
     }
 
-    protected static resolveRegistryKey<A extends Ctor<Annotation>>(ctor: A, propertyKey?: PropertyKey) {
-        if (Var.isSubclassOf(ctor, ClassAnnotation)) {
+    protected static resolveRegistryKey<A extends Ctor<Annotation>>(AnnotationClass: A, propertyKey?: PropertyKey) {
+        if (Var.isSubclassOf(AnnotationClass, ClassAnnotation)) {
             return ClassAnnotation.registryKey;
         }
 
-        if (Var.isSubclassOf(ctor, PropertyAnnotation)) {
+        if (Var.isSubclassOf(AnnotationClass, PropertyAnnotation)) {
             if (!propertyKey) {
-                throw new InvalidArgumentError(`Property key is required for ${ctor.name}`);
+                throw new BadMethodCallError(`Property key is required for ${AnnotationClass.name}`);
             }
             return propertyKey;
         }
 
-        throw new InvalidArgumentError(`Expected subclass of ${PropertyAnnotation.name} or ${ClassAnnotation.name}`);
+        throw new BadMethodCallError(`Expected subclass of ${PropertyAnnotation.name} or ${ClassAnnotation.name}`);
     }
 }

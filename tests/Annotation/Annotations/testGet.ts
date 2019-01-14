@@ -12,10 +12,10 @@ test("", () => {
         protected name?: string;
     }
 
-    const fooDoc = new DocumentAnnotation(Foo);
-    const barDoc = new DocumentAnnotation(Bar, {collection: "bar"});
+    const foo = new DocumentAnnotation(Foo);
+    const bar = new DocumentAnnotation(Bar, {collection: "bar"});
 
-    expect(Annotations.get(DocumentAnnotation, Foo)).toStrictEqual([fooDoc]);
-    expect(Annotations.get(DocumentAnnotation, Bar)).toStrictEqual([fooDoc, barDoc]);
+    expect(Annotations.get(DocumentAnnotation, Foo)).toStrictEqual([foo]);
+    expect(Annotations.get(DocumentAnnotation, Bar)).toStrictEqual([foo, bar]);
 
 });
