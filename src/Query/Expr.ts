@@ -3,23 +3,23 @@ import {Condition} from "mongodb";
 import {AbstractExpr} from "./AbstractExpr";
 
 export class Expr<T = any, K extends keyof T = keyof T> extends AbstractExpr implements Cloneable {
-    protected condition: Partial<Condition<T, K>> = {};
+    protected expr: Partial<Condition<T, K>> = {};
 
-    constructor(condition: Partial<Condition<T, K>> = {}) {
+    constructor() {
         super();
-        this.condition = {...condition};
+        this.expr = {};
     }
 
     public clone() {
-        this.condition = Cloner.clone(this.condition);
+        this.expr = Cloner.clone(this.expr);
     }
 
-    public getCondition() {
-        return this.condition;
+    public getExpr() {
+        return this.expr;
     }
 
     public operator<O extends keyof Condition<T, K>>(op: O, value: Condition<T, K>[O]) {
-        this.condition[op] = value;
+        this.expr[op] = value;
         return this;
     }
 }

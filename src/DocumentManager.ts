@@ -9,11 +9,7 @@ export class DocumentManager {
         this.repositoryFactory = new RepositoryRegistry(this);
     }
 
-    public getDocumentPersister<T>(target: T): any {
-        // todo
-    }
-
-    public createQueryBuilder<C extends Ctor>(documentClass: C) {
+    public createQueryBuilder<T>(documentClass: Ctor<T>) {
         return new QueryBuilder(this, documentClass);
     }
 

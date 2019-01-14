@@ -61,5 +61,5 @@ export abstract class AbstractExpr<T = any, K extends keyof T = keyof T> {
     public comment(comment: string) { return this; }
 
     public abstract operator<O extends keyof Condition<T, K>>(op: O, value: Condition<T, K>[O]): this;
-
+    public abstract getExpr(): any;
 }

@@ -1,20 +1,18 @@
-import {Cloneable} from "@sirian/clone";
 import {Var, XMap} from "@sirian/common";
 import {Ctor} from "@sirian/ts-extra-types";
 import {Condition, FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
 import {AbstractExpr} from "./AbstractExpr";
 import {Expr} from "./Expr";
-import {Query} from "./Query";
 
-export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr {
+export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr<T, K> {
     protected dm: DocumentManager;
 
-    protected class: Ctor<T>;
+    protected class?: Ctor<T>;
 
     protected currentField?: K;
 
-    protected fieldExpressions: XMap<keyof T, Expr>;
+    protected fieldExpressions: XMap<K, Expr>;
 
     protected options: FindOneOptions = {};
 
@@ -23,7 +21,7 @@ export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr {
 
         this.dm = dm;
         this.class = documentClass;
-        this.fieldExpressions = new XMap(() => new Expr(this.dm));
+        this.fieldExpressions = new XMap(() => new Expr());
     }
 
     public setOptions(options: FindOneOptions) {
@@ -89,7 +87,13 @@ export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr {
         return this;
     }
 
-    public getQuery() {
-        return new Query(this.dm, this.class);
+    public getExpr() {
+        const result: any = {};
+
+        for (const [key, value] of this.fieldExpressions.entries()) {
+            result[key] = value instanceof AbstractExpr ? value.getExpr() : value;
+        }
+
+        return result;
     }
 }
