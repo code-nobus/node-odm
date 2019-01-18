@@ -11,20 +11,20 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@sirian/clone": "^1.0.0",
-        "@sirian/common": "^4.23.0",
+        "@sirian/clone": "^1.1.1",
+        "@sirian/common": "^4.24.0",
         "@sirian/decorators": "^1.0.8",
         "@sirian/error": "^1.0.0",
         "@sirian/format": "^1.0.3",
         "@sirian/iterator": "^1.11.1",
-        "@sirian/ts-extra-types": "^3.9.0",
+        "@sirian/ts-extra-types": "^3.13.0",
         "bson": "^4.0.1",
-        "mongodb": "^3.1.10"
+        "mongodb": "^3.1.12"
     },
     "devDependencies": {
         "@types/bson": "^1.0.11",
         "@types/jest": "^23.3.12",
-        "@types/mongodb": "^3.1.18",
+        "@types/mongodb": "^3.1.19",
         "@types/node": "^10.12.18",
         "@types/reflect-metadata": "^0.1.0",
         "@types/sprintf-js": "^1.1.1",
@@ -37,7 +37,7 @@
         "ts-jest": "^23.10.5",
         "ts-node": "^7.0.1",
         "tslint": "^5.12.1",
-        "typescript": "^3.2.2"
+        "typescript": "^3.2.4"
     },
     "scripts": {
         "ci:build": "yarn clean && yarn lint && yarn test && yarn build",

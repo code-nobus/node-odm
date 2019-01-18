@@ -4,6 +4,7 @@ import {ClassAnnotation} from "./ClassAnnotation";
 
 export interface IDocumentInit {
     collection: string;
+    db: string;
 }
 
 export class DocumentAnnotation<C extends Ctor = Ctor> extends ClassAnnotation<C> {

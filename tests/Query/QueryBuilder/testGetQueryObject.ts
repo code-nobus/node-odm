@@ -13,5 +13,5 @@ test("", () => {
         .field("foo").gt(2).lt(3)
     ;
 
-    expect(qb.getExpr()).toStrictEqual(({foo: {$gt: 2, $lt: 3}}));
+    expect(qb.getQueryObject()).toStrictEqual(({foo: {$gt: 2, $lt: 3}}));
 });

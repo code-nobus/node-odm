@@ -1,18 +1,22 @@
-import {Var, XMap} from "@sirian/common";
+import {Cloner} from "@sirian/clone";
+import {Var} from "@sirian/common";
+import {RuntimeError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
-import {Condition, FindOneOptions} from "mongodb";
+import {Condition, FilterQuery, FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
-import {AbstractExpr} from "./AbstractExpr";
-import {Expr} from "./Expr";
+import {AbstractSelector} from "./AbstractSelector";
+import {Query} from "./Query";
 
-export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr<T, K> {
+export type QueryObject<T, K extends keyof T = keyof T> = { [P in K]?: T[P] | Condition<T, P> };
+
+export class QueryBuilder<T> extends AbstractSelector<T> {
     protected dm: DocumentManager;
 
-    protected class?: Ctor<T>;
+    protected documentClass: Ctor<T>;
 
-    protected currentField?: K;
+    protected currentField?: keyof T;
 
-    protected fieldExpressions: XMap<K, Expr>;
+    protected queryObject: QueryObject<T>;
 
     protected options: FindOneOptions = {};
 
@@ -20,8 +24,8 @@ export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr<T
         super();
 
         this.dm = dm;
-        this.class = documentClass;
-        this.fieldExpressions = new XMap(() => new Expr());
+        this.documentClass = documentClass;
+        this.queryObject = {};
     }
 
     public setOptions(options: FindOneOptions) {
@@ -37,8 +41,8 @@ export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr<T
         return this.setOptions({limit});
     }
 
-    public setQuery(query: object) {
-        // todo:
+    public setQueryObject(query: FilterQuery<T>) {
+        this.queryObject = Cloner.clone(query);
         return this;
     }
 
@@ -46,54 +50,51 @@ export class QueryBuilder<T, K extends keyof T = keyof T> extends AbstractExpr<T
         return this;
     }
 
-    public field(field: K): this;
-    public field(field: K, value: Expr): this;
+    public field<K extends keyof T>(field: K): this;
 
-    public field(field: K, ...args: any[]) {
+    public field<K extends keyof T>(field: K, value: T[K] | Condition<T, K>): this;
+
+    public field(field: keyof T, ...args: any[]) {
         this.currentField = field;
 
-        if (!args.length) {
+        if (args.length) {
+            this.queryObject[field] = args[0];
             return this;
-        }
-
-        const arg = args[0];
-
-        if (Var.isInstanceOf(arg, Expr)) {
-            this.fieldExpressions.set(field, arg);
-            return this;
-        }
-
-        if (Var.isFunction(arg)) {
-            const expr = this.fieldExpressions.ensure(field);
-            arg(expr);
-        } else {
-            this.fieldExpressions.delete(field);
         }
 
         return this;
     }
 
-    public operator<O extends keyof Condition<T, K>>(op: O, value: Condition<T, K>[O]) {
+    public getQuery() {
+        // todo
+        return new Query(this.dm, this.documentClass);
+    }
+
+    public operator(op: keyof Condition<T, keyof T>, value: any) {
         const field = this.currentField;
 
         if (!field) {
             throw new Error("call .field() first");
         }
 
-        const fieldExpr = this.fieldExpressions.ensure(field);
+        const query = this.queryObject;
 
-        fieldExpr.operator(op, value);
+        if (!Var.hasOwn(query, field)) {
+            query[field] = {};
+        }
+
+        const currentFieldQuery = query[field] as any;
+
+        if (!Var.isObject(currentFieldQuery)) {
+            throw new RuntimeError("Could not ");
+        }
+
+        currentFieldQuery[op] = value;
 
         return this;
     }
 
-    public getExpr() {
-        const result: any = {};
-
-        for (const [key, value] of this.fieldExpressions.entries()) {
-            result[key] = value instanceof AbstractExpr ? value.getExpr() : value;
-        }
-
-        return result;
+    public getQueryObject() {
+        return Cloner.clone(this.queryObject);
     }
 }

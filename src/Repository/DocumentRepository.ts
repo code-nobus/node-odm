@@ -34,7 +34,7 @@ export class DocumentRepository<T> {
 
     public findBy(query: object, options: Partial<FindOneOptions> = {}) {
         return this.createQueryBuilder()
-            .setQuery(query)
+            .setQueryObject(query)
             .setOptions(options)
             .getQuery();
     }
