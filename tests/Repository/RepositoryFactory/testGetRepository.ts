@@ -1,10 +1,11 @@
-import {DocumentManager, DocumentRepository} from "../../../src";
+import {Document, DocumentManager, DocumentRepository, ODM} from "../../../src";
 
 describe("", () => {
     const dm = new DocumentManager();
     const factory = dm.repositoryFactory;
 
     test("#getRepository", () => {
+        @ODM.document
         class Post {
         }
 
@@ -21,10 +22,9 @@ describe("", () => {
             }
         }
 
-        class User {
-            public static readonly odm = {
-                repositoryClass: UserRepository,
-            };
+        @ODM.document
+        class User extends Document {
+            public static repositoryClass = UserRepository;
         }
 
         const repo = dm.getRepository(User);

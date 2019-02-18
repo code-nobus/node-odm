@@ -1,18 +1,18 @@
 import {Cloner} from "@sirian/clone";
-import {Var} from "@sirian/common";
+import {Obj, Var} from "@sirian/common";
 import {RuntimeError} from "@sirian/error";
-import {Ctor} from "@sirian/ts-extra-types";
-import {Condition, FilterQuery, FindOneOptions} from "mongodb";
+import {Condition, FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
+import {Document, IDocumentClass} from "../Schema";
 import {AbstractSelector} from "./AbstractSelector";
 import {Query} from "./Query";
 
 export type QueryObject<T, K extends keyof T = keyof T> = { [P in K]?: T[P] | Condition<T, P> };
 
-export class QueryBuilder<T> extends AbstractSelector<T> {
+export class QueryBuilder<T extends Document> extends AbstractSelector<T> {
     protected dm: DocumentManager;
 
-    protected documentClass: Ctor<T>;
+    protected documentClass: IDocumentClass<T>;
 
     protected currentField?: keyof T;
 
@@ -20,7 +20,7 @@ export class QueryBuilder<T> extends AbstractSelector<T> {
 
     protected options: FindOneOptions = {};
 
-    constructor(dm: DocumentManager, documentClass: Ctor<T>) {
+    constructor(dm: DocumentManager, documentClass: IDocumentClass<T>) {
         super();
 
         this.dm = dm;
@@ -29,7 +29,7 @@ export class QueryBuilder<T> extends AbstractSelector<T> {
     }
 
     public setOptions(options: FindOneOptions) {
-        Object.assign(this.options, options);
+        Obj.assign(this.options, options);
         return this;
     }
 
@@ -41,7 +41,7 @@ export class QueryBuilder<T> extends AbstractSelector<T> {
         return this.setOptions({limit});
     }
 
-    public setQueryObject(query: FilterQuery<T>) {
+    public setQueryObject(query: QueryObject<T>) {
         this.queryObject = Cloner.clone(query);
         return this;
     }

@@ -1,10 +1,16 @@
-import {Ctor} from "@sirian/ts-extra-types";
 import {Annotation} from "../Annotation";
+import {Annotations} from "../Annotations";
 
-export class ClassAnnotation<C extends Ctor = Ctor> extends Annotation<C> {
-    public static readonly registryKey: unique symbol = Symbol();
+export type ClassAnnotationCtor<O> = new (target: Function, opts?: O) => ClassAnnotation<O>;
 
-    public get registryKey() {
-        return ClassAnnotation.registryKey;
+export class ClassAnnotation<O = any> extends Annotation<O> {
+    public static decorate<O>(this: ClassAnnotationCtor<O>, opts?: O) {
+        return <F extends Function>(ctor: F) => {
+            const meta = new this(ctor, opts);
+
+            Annotations.add(meta);
+
+            return ctor;
+        };
     }
 }

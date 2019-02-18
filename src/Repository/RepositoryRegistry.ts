@@ -1,13 +1,11 @@
 import {Var, XMap} from "@sirian/common";
 import {InvalidArgumentError} from "@sirian/error";
-import {Ctor} from "@sirian/ts-extra-types";
 import {DocumentManager} from "../DocumentManager";
-import {IODMDocument} from "../ODM";
-import {Metadata} from "../Schema/Metadata";
+import {IDocumentClass, Metadata} from "../Schema";
 import {DocumentRepository, RepositoryType} from "./DocumentRepository";
 
 export class RepositoryRegistry {
-    protected readonly map: XMap<Ctor, DocumentRepository<any>>;
+    protected readonly map: XMap<IDocumentClass, DocumentRepository<any>>;
     protected readonly dm: DocumentManager;
 
     constructor(dm: DocumentManager) {
@@ -15,24 +13,34 @@ export class RepositoryRegistry {
         this.map = new XMap((documentClass) => this.createRepository(documentClass));
     }
 
-    public get<T extends Ctor>(docClass: T) {
-        return this.map.ensure(docClass) as RepositoryType<T>;
+    public get<D extends IDocumentClass>(docClass: D) {
+        return this.map.ensure(docClass) as RepositoryType<D>;
     }
 
-    protected createRepository(docClass: Ctor & Partial<IODMDocument>) {
-        if (!Metadata.isDocument(docClass)) {
+    protected createRepository<D extends IDocumentClass>(docClass: D) {
+        const meta = Metadata.get(docClass);
+
+        if (!meta.isDocument) {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
         }
 
-        const odm = docClass.odm;
+        const ctor = docClass.repositoryClass;
 
-        if (Var.isObject(odm)) {
-            const ctor = odm.repositoryClass;
+        if (ctor) {
             if (Var.isSubclassOf(ctor, DocumentRepository)) {
-                return new ctor(this, docClass);
+                return new ctor(this.dm, docClass);
+            } else {
+                throw new InvalidArgumentError("repositoryClass should extends DocumentRepository");
             }
-            if (Var.isFunction(odm.repositoryFactory)) {
-                return odm.repositoryFactory(this.dm, docClass);
+        }
+
+        const factory = docClass.repositoryFactory;
+
+        if (factory) {
+            if (Var.isFunction(factory)) {
+                return factory(this.dm, docClass);
+            } else {
+                throw new InvalidArgumentError("repositoryFactory should be a function");
             }
         }
 

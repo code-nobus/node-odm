@@ -1,14 +1,14 @@
-import {Ctor} from "@sirian/ts-extra-types";
 import {Cursor} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
 import {NotImplementedError} from "../Error";
 import {CursorIterator} from "../Iterator";
+import {Document, IDocumentClass} from "../Schema/Document";
 
-export class Query<T> {
+export class Query<T extends Document> {
     protected dm: DocumentManager;
-    protected documentClass: Ctor<T>;
+    protected documentClass: IDocumentClass<T>;
 
-    constructor(dm: DocumentManager, documentClass: Ctor<T>) {
+    constructor(dm: DocumentManager, documentClass: IDocumentClass<T>) {
         this.dm = dm;
         this.documentClass = documentClass;
     }

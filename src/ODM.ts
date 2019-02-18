@@ -1,24 +1,7 @@
 import {Decorator} from "@sirian/decorators";
-import {Ctor} from "@sirian/ts-extra-types";
-import {DocumentAnnotation, FieldAnnotation} from "./Annotation";
-import {DocumentManager} from "./DocumentManager";
-import {DocumentRepository} from "./Repository";
-
-export type ODMDocOption<T, K extends keyof IODMDocument["odm"], TDefault> =
-    T extends any
-    ? K extends keyof T["odm"]
-      ? T["odm"][K]
-      : TDefault
-    : TDefault;
-
-export interface IODMDocument {
-    odm: {
-        repositoryClass: Ctor<DocumentRepository<any>>;
-        repositoryFactory: <T extends Ctor>(dm: DocumentManager, documentClass: T) => DocumentRepository<T>
-    };
-}
+import {DocumentAnnotation, FieldAnnotation, IDocumentAnnotationOptions, IFieldAnnotationOptions} from "./Annotation";
 
 export const ODM = {
-    document: Decorator.forClass(DocumentAnnotation.decorate),
-    field: Decorator.forProperty(FieldAnnotation.decorate),
+    document: Decorator.forClass((opts?: IDocumentAnnotationOptions) => DocumentAnnotation.decorate(opts)),
+    field: Decorator.forProperty((opts?: IFieldAnnotationOptions) => FieldAnnotation.decorate(opts)),
 };

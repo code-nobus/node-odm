@@ -1,74 +1,43 @@
-import {Ref, Var, XMap} from "@sirian/common";
+import {Var, XMap} from "@sirian/common";
 import {Ctor} from "@sirian/ts-extra-types";
-import {BadMethodCallError} from "../Error";
 import {Annotation} from "./Annotation";
-import {AnnotationRegistry} from "./AnnotationRegistry";
-import {ClassAnnotation} from "./Class";
 import {PropertyAnnotation} from "./Property";
 
 export class Annotations<T> {
-    public static readonly classMap = new XMap((target) => new Annotations<any>(target));
-
-    public readonly class: T;
-
-    protected readonly registries: XMap<PropertyKey, AnnotationRegistry>;
-
-    constructor(target: T) {
-        this.class = target;
-        this.registries = new XMap(() => new AnnotationRegistry());
-    }
+    public static readonly map = new XMap<Function, Annotation[]>(() => []);
 
     public static add(annotation: Annotation) {
-        const instance = Annotations.classMap.ensure(annotation.class);
+        const classAnnotations = Annotations.map.ensure(annotation.class);
 
-        const key = annotation.registryKey;
+        classAnnotations.push(annotation);
 
-        instance.registries.ensure(key).add(annotation);
+        return this;
     }
 
-    public static get<A extends Ctor<PropertyAnnotation>>(AnnotationClass: A, target: object, propertyKey: PropertyKey): Array<InstanceType<A>>;
-    public static get<A extends Ctor<ClassAnnotation>>(AnnotationClass: A, target: object): Array<InstanceType<A>>;
-
-    public static get<A extends Ctor<Annotation>>(AnnotationClass: A, target: object, propertyKey?: PropertyKey) {
-        const result: Array<InstanceType<A>> = [];
-
-        for (const obj of Ref.getProtoChain(target)) {
-            const registry = Annotations.getRegistry(AnnotationClass, obj, propertyKey);
-            if (!registry) {
-                continue;
-            }
-            const values = registry.get(AnnotationClass);
-            if (values) {
-                result.unshift(...values);
-            }
-        }
-
-        return result;
-
+    public static getAllAnnotations(target: Ctor) {
+        const annotations = this.map.get(target) || [];
+        return [...annotations];
     }
 
-    protected static getRegistry<A extends Ctor<Annotation>>(AnnotationClass: A, target: object, propertyKey?: PropertyKey) {
-        const instance = this.classMap.get(target);
-        if (!instance) {
-            return;
-        }
+    public static getAnnotation<AC extends Ctor<Annotation>>(AnnotationClass: AC, target: Ctor) {
+        const annotations = this.getAllAnnotations(target);
 
-        const key = this.resolveRegistryKey(AnnotationClass, propertyKey);
-        return instance.registries.get(key);
+        for (const annotation of annotations) {
+            if (Var.isInstanceOf(annotation, AnnotationClass)) {
+                return annotation;
+            }
+        }
     }
 
-    protected static resolveRegistryKey<A extends Ctor<Annotation>>(AnnotationClass: A, propertyKey?: PropertyKey) {
-        if (Var.isSubclassOf(AnnotationClass, ClassAnnotation)) {
-            return ClassAnnotation.registryKey;
-        }
+    public static getAnnotations<AC extends Ctor<Annotation>>(AnnotationClass: AC, target: Ctor) {
+        return this
+            .getAllAnnotations(target)
+            .filter((a) => Var.isInstanceOf(a, AnnotationClass)) as Array<InstanceType<AC>>;
+    }
 
-        if (Var.isSubclassOf(AnnotationClass, PropertyAnnotation)) {
-            if (!propertyKey) {
-                throw new BadMethodCallError(`Property key is required for ${AnnotationClass.name}`);
-            }
-            return propertyKey;
-        }
-
-        throw new BadMethodCallError(`Expected subclass of ${PropertyAnnotation.name} or ${ClassAnnotation.name}`);
+    public static getPropertyAnnotations<AC extends Ctor<PropertyAnnotation>>(AnnotationClass: AC, target: Ctor, key: PropertyKey) {
+        return this
+            .getAnnotations(AnnotationClass, target)
+            .filter((a) => a.propertyKey === key);
     }
 }

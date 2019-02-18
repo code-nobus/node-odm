@@ -3,7 +3,7 @@ import {Annotations, FieldAnnotation, ODM} from "../../../../src";
 function check(ctor: any, options: any) {
     const expected = new FieldAnnotation(ctor.prototype, "foo", options);
 
-    expect(Annotations.get(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
+    expect(Annotations.getPropertyAnnotations(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
 }
 
 test("@ODM.field", () => {

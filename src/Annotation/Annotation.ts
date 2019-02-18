@@ -1,11 +1,19 @@
-import {Ctor} from "@sirian/ts-extra-types";
+export abstract class Annotation<O = any> {
+    public readonly class: Function;
+    public readonly opts: Partial<O>;
 
-export abstract class Annotation<C extends Ctor = Ctor> {
-    public readonly class: C;
-
-    constructor(target: C) {
+    constructor(target: Function, opts?: O) {
         this.class = target;
+        this.opts = {...opts};
+
+        this.init();
     }
 
-    public abstract get registryKey(): any;
+    public static decorate(): ClassDecorator | MethodDecorator | PropertyDecorator | ParameterDecorator | void {
+
+    }
+
+    protected init() {
+
+    }
 }
