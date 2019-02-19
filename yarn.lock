@@ -840,6 +840,11 @@
   resolved "https://registry.yarnpkg.com/@sirian/ts-extra-types/-/ts-extra-types-3.16.0.tgz#543e32f007994c3f715b6a107fc0fb40ed437a9e"
   integrity sha512-P4Xr85QUiyfvJX/j3R5WdZOvmo8SF+NVD/GaVfdGEdva72y6sS9lYwqWbRlxT6jyq2jKfgBQMdZexfyZ2Fr4fQ==
 
+"@sirian/ts-extra-types@^3.17.0":
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/@sirian/ts-extra-types/-/ts-extra-types-3.17.0.tgz#31a74142e49787d1fa890653810398c527d81cac"
+  integrity sha512-VTfgO/+hwYV0HM9BMzJ0Q+IsiZWtKypqMzxzOoi0GiIZo2TLDX5sbrUsCzkRTxYC099EuIgWf0dp38V3Ras5jw==
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"

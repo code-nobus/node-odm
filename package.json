@@ -19,7 +19,7 @@
         "@sirian/format": "^1.0.3",
         "@sirian/iterator": "^1.11.1",
         "@sirian/mixin": "^1.0.0",
-        "@sirian/ts-extra-types": "^3.16.0",
+        "@sirian/ts-extra-types": "^3.17.0",
         "bson": "^4.0.1",
         "mongodb": "^3.1.13"
     },

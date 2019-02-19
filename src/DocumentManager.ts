@@ -4,6 +4,7 @@ import {MongoClient, MongoClientOptions} from "mongodb";
 import {QueryBuilder} from "./Query";
 import {RepositoryFactory} from "./Repository";
 import {Doc, Metadata} from "./Schema";
+import {MetadataFactory} from "./Schema/MetadataFactory";
 
 export interface IDocumentManagerOptions {
     url: string;
@@ -35,7 +36,7 @@ export class DocumentManager<T extends Doc = any> {
 
     public async getCollection<C extends Ctor<T>>(docClass: C) {
         const db = await this.getDocumentDatabase(docClass);
-        const meta = Metadata.get(docClass);
+        const meta = this.getMetadata(docClass);
         const name = meta.collectionName;
         if (!name) {
             throw new Error(""); // todo
@@ -44,11 +45,11 @@ export class DocumentManager<T extends Doc = any> {
     }
 
     public async getDocumentDatabase<C extends Ctor<T>>(docClass: C) {
-        if (!Metadata.get(docClass).isDocument) {
+        const meta = this.getMetadata(docClass);
+        if (!meta.isDocument) {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
         }
 
-        const meta = Metadata.get(docClass);
         const client = await this.getClient();
         return client.db(meta.dbName!);
     }
@@ -80,7 +81,7 @@ export class DocumentManager<T extends Doc = any> {
     }
 
     public getMetadata<C extends Ctor<T>>(ctor: C) {
-        return Metadata.get(ctor);
+        return MetadataFactory.get(ctor);
     }
 
     public async initializeObject(object: T): Promise<T> {

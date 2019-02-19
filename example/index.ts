@@ -26,14 +26,6 @@ class User extends Doc {
         url: "mongodb://127.0.0.1:27017/test",
     });
 
-    const collection = await dm.getCollection(User);
-    await collection.deleteMany({});
-    await collection.insertMany([
-        {active: false, username: "foo"},
-        {active: true, username: "bar"},
-        {active: true, username: "zoo"},
-    ]);
-
     const repo = dm.getRepository(User);
     const users = await repo.findActive().getIterator();
     for await(const user of users) {

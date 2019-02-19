@@ -2,7 +2,7 @@ import {Var, XMap} from "@sirian/common";
 import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
 import {DocumentManager} from "../DocumentManager";
-import {Doc, Metadata} from "../Schema";
+import {Doc} from "../Schema";
 import {DocumentRepository, RepositoryType} from "./DocumentRepository";
 
 export class RepositoryFactory {
@@ -19,7 +19,7 @@ export class RepositoryFactory {
     }
 
     protected createRepository<T extends Doc>(docClass: Ctor<T>) {
-        const meta = Metadata.get(docClass);
+        const meta = this.dm.getMetadata(docClass);
 
         if (!meta.isDocument) {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
