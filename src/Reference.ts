@@ -1,11 +1,13 @@
-import {Document, IDocumentClass} from "./Schema";
+import {Ctor} from "@sirian/ts-extra-types";
+import {AbstractDoc} from "./Schema";
+import {Doc} from "./Schema/Doc";
 
-export class Reference<T extends Document> {
-    protected documentClass: IDocumentClass<T>;
+export class Reference<C extends Ctor<Doc>> {
+    protected docClass: C;
     protected id: any;
 
-    public constructor(documentClass: IDocumentClass<T>, id: any) {
-        this.documentClass = documentClass;
+    public constructor(docClass: C, id: any) {
+        this.docClass = docClass;
         this.id = id;
 
     }

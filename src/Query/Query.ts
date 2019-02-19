@@ -1,16 +1,30 @@
-import {Cursor} from "mongodb";
+import {Ctor} from "@sirian/ts-extra-types";
 import {DocumentManager} from "../DocumentManager";
-import {NotImplementedError} from "../Error";
-import {CursorIterator} from "../Iterator";
-import {Document, IDocumentClass} from "../Schema/Document";
+import {CursorIterator, LazyIterator} from "../Iterator";
+import {QueryObject, QueryOptions} from "./QueryBuilder";
 
-export class Query<T extends Document> {
-    protected dm: DocumentManager;
-    protected documentClass: IDocumentClass<T>;
+export interface IQueryInit<T> {
+    dm: DocumentManager;
+    docClass: Ctor<T>;
+    queryObject?: QueryObject<T>;
+    options?: QueryOptions;
+}
 
-    constructor(dm: DocumentManager, documentClass: IDocumentClass<T>) {
-        this.dm = dm;
-        this.documentClass = documentClass;
+export class Query<T> {
+    public readonly dm: DocumentManager;
+    public readonly docClass: Ctor<T>;
+    public readonly queryObject: QueryObject<T>;
+    public readonly options: QueryOptions;
+
+    constructor(init: IQueryInit<T>) {
+        this.dm = init.dm;
+        this.docClass = init.docClass;
+        this.queryObject = {...init.queryObject};
+        this.options = {...init.options};
+    }
+
+    public async getCollection() {
+        return this.dm.getCollection(this.docClass);
     }
 
     public toArray() {
@@ -18,7 +32,9 @@ export class Query<T extends Document> {
     }
 
     public async getSingleResult() {
-        const cursor = this.getCursor().limit(1);
+        const cursor = await this.createCursor();
+
+        cursor.limit(1);
 
         try {
             return await cursor.next();
@@ -28,11 +44,16 @@ export class Query<T extends Document> {
     }
 
     public getIterator() {
-        return new CursorIterator(this.getCursor());
+        return new LazyIterator(async () => this.createCursorIterator());
     }
 
-    public getCursor(): Cursor<object> {
-        // todo
-        throw new NotImplementedError(this, "getCursor");
+    public async createCursor() {
+        const collection = await this.getCollection();
+        return collection.find(this.queryObject, this.options);
+    }
+
+    protected async createCursorIterator() {
+        const cursor = await this.createCursor();
+        return new CursorIterator(cursor);
     }
 }

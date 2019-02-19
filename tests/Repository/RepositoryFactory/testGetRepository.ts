@@ -1,4 +1,4 @@
-import {Document, DocumentManager, DocumentRepository, ODM} from "../../../src";
+import {Doc, DocumentManager, DocumentRepository, ODM} from "../../../src";
 
 describe("", () => {
     const dm = new DocumentManager();
@@ -6,12 +6,12 @@ describe("", () => {
 
     test("#getRepository", () => {
         @ODM.document
-        class Post {
+        class Post extends Doc {
         }
 
         const repo = factory.get(Post);
         expect(repo).toBeInstanceOf(DocumentRepository);
-        expect(repo.documentClass).toBe(Post);
+        expect(repo.docClass).toBe(Post);
         expect(dm.getRepository(Post)).toBe(repo);
     });
 
@@ -22,15 +22,17 @@ describe("", () => {
             }
         }
 
-        @ODM.document
-        class User extends Document {
-            public static repositoryClass = UserRepository;
+        @ODM.document({})
+        class User extends Doc {
+            public getRepositoryClass() {
+                return UserRepository;
+            }
         }
 
         const repo = dm.getRepository(User);
 
         expect(repo).toBeInstanceOf(UserRepository);
-        expect(repo.documentClass).toBe(User);
+        expect(repo.docClass).toBe(User);
         expect(repo.foo()).toBe("bar");
     });
 

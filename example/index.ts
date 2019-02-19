@@ -1,26 +1,44 @@
-import {Document, DocumentManager, DocumentRepository, ODM} from "../src";
+import {Doc, DocumentManager, DocumentRepository, ODM} from "../src";
 
-class UserRepository extends DocumentRepository {
+class UserRepository extends DocumentRepository<User> {
     public findActive() {
-        // todo
+        return this
+            .createQueryBuilder()
+            .field("active").eq(true)
+            .getQuery();
     }
 }
 
-@ODM.document({db: "test", collection: "users"})
-class User extends Document {
-    public static repositoryClass = UserRepository;
+@ODM.document({
+    collection: "users",
+})
+class User extends Doc {
+    @ODM.field
+    public active: boolean = false;
 
-    @ODM.field({name: "bar", nullable: false})
-    public foo: string = "";
+    public getRepositoryClass() {
+        return UserRepository;
+    }
 }
 
 (async () => {
-    const dm = new DocumentManager();
-    const coll = await dm.getCollection(User);
-    const repo = dm.getRepository(User);
-    console.assert("users" === coll.collectionName);
-    console.assert(UserRepository === repo.constructor);
-    console.log("count", await coll.countDocuments());
+    const dm = new DocumentManager({
+        url: "mongodb://127.0.0.1:27017/test",
+    });
+
+    const collection = await dm.getCollection(User);
+    await collection.deleteMany({});
+    await collection.insertMany([
+        {active: false, username: "foo"},
+        {active: true, username: "bar"},
+        {active: true, username: "zoo"},
+    ]);
+
+    const repo: UserRepository = dm.getRepository(User);
+    const users = await repo.findActive().getIterator();
+    for await(const user of users) {
+        console.log(user);
+    }
 
     await dm.close();
 })();

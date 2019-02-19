@@ -1,21 +1,22 @@
 import {InvalidArgumentError} from "@sirian/error";
+import {Ctor} from "@sirian/ts-extra-types";
 import {MongoClient, MongoClientOptions} from "mongodb";
 import {QueryBuilder} from "./Query";
-import {RepositoryRegistry} from "./Repository";
-import {Document, IDocumentClass, Metadata} from "./Schema";
+import {RepositoryFactory} from "./Repository";
+import {Doc, Metadata} from "./Schema";
 
 export interface IDocumentManagerOptions {
     url: string;
     options: MongoClientOptions;
 }
 
-export class DocumentManager {
-    public readonly repositoryFactory: RepositoryRegistry;
+export class DocumentManager<T extends Doc = any> {
+    public readonly repositoryFactory: RepositoryFactory;
     protected options: IDocumentManagerOptions;
     protected client?: Promise<MongoClient>;
 
     constructor(init: Partial<IDocumentManagerOptions> = {}) {
-        this.repositoryFactory = new RepositoryRegistry(this);
+        this.repositoryFactory = new RepositoryFactory(this);
         this.options = {
             url: "mongodb://127.0.0.1:27017",
             options: {
@@ -32,13 +33,17 @@ export class DocumentManager {
         return this.client;
     }
 
-    public async getCollection<T extends IDocumentClass>(docClass: T) {
+    public async getCollection<C extends Ctor<T>>(docClass: C) {
         const db = await this.getDocumentDatabase(docClass);
         const meta = Metadata.get(docClass);
-        return db.collection(meta.collectionName!);
+        const name = meta.collectionName;
+        if (!name) {
+            throw new Error(""); // todo
+        }
+        return db.collection(name);
     }
 
-    public async getDocumentDatabase<T extends IDocumentClass>(docClass: T) {
+    public async getDocumentDatabase<C extends Ctor<T>>(docClass: C) {
         if (!Metadata.get(docClass).isDocument) {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
         }
@@ -48,11 +53,11 @@ export class DocumentManager {
         return client.db(meta.dbName!);
     }
 
-    public createQueryBuilder<T extends Document>(docClass: IDocumentClass<T>) {
-        return new QueryBuilder(this, docClass);
+    public createQueryBuilder<C extends Ctor<T>>(docClass: C): QueryBuilder<InstanceType<C>> {
+        return new QueryBuilder(this, docClass) as any;
     }
 
-    public getRepository<D extends IDocumentClass>(docClass: D) {
+    public getRepository<C extends Ctor<T>>(docClass: C) {
         return this.repositoryFactory.get(docClass);
     }
 
@@ -62,5 +67,43 @@ export class DocumentManager {
         }
         const client = await this.client;
         await client.close();
+    }
+
+    public clear(ctor: Ctor<T>): void {
+    }
+
+    public detach(object: T): void {
+    }
+
+    public async flush() {
+        throw new Error("not implemented"); // todo
+    }
+
+    public getMetadata<C extends Ctor<T>>(ctor: C) {
+        return Metadata.get(ctor);
+    }
+
+    public async initializeObject(object: T): Promise<T> {
+        throw new Error("not implemented"); // todo
+    }
+
+    public isManaged(object: T): boolean {
+        throw new Error("not implemented"); // todo
+    }
+
+    public merge(object: T): T {
+        throw new Error("not implemented"); // todo
+    }
+
+    public persist(object: T) {
+        throw new Error("not implemented"); // todo
+    }
+
+    public refresh(object: T): Promise<void> {
+        throw new Error("not implemented"); // todo
+    }
+
+    public remove(object: T) {
+        throw new Error("not implemented"); // todo
     }
 }

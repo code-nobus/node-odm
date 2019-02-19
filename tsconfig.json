@@ -5,7 +5,7 @@
         "rootDir": "src",
         "outDir": "dist",
         "declaration": true,
-        "lib": ["esnext"],
+        "lib": ["esnext", "dom"],
         "sourceMap": true,
         "strict": true,
         "strictNullChecks": true,

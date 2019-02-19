@@ -1,29 +1,25 @@
 import {Var} from "@sirian/common";
-import {Ctor, Func} from "@sirian/ts-extra-types";
+import {Ctor} from "@sirian/ts-extra-types";
 import {FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
-import {Document, IDocumentClass} from "../Schema";
 
-export type RepositoryFactory<T> = (dm: DocumentManager, docClass: Ctor<T>) => DocumentRepository<T>;
-export type RepositoryCtor<T> = new(dm: DocumentManager, docClass: Ctor<T>) => DocumentRepository<T>;
+import {Doc} from "../Schema";
 
-export type RepositoryType<D extends IDocumentClass> =
-    D extends { repositoryClass: Ctor<infer R1> } ? R1 :
-    D extends { repositoryFactory: Func<infer R2> } ? R2 :
-    DocumentRepository<InstanceType<D>>;
+export type RepositoryCtor<T extends Doc> = new(manager: DocumentManager, docClass: Ctor<T>) => DocumentRepository<T>;
+export type RepositoryType<C extends Ctor<Doc>> = InstanceType<ReturnType<InstanceType<C>["getRepositoryClass"]>>;
 
-export class DocumentRepository<T extends Document = any> {
+export class DocumentRepository<T extends Doc = any> {
     public readonly dm: DocumentManager;
 
-    public readonly documentClass: IDocumentClass<T>;
+    public readonly docClass: Ctor<T>;
 
-    public constructor(manager: DocumentManager, documentClass: IDocumentClass<T>) {
+    public constructor(manager: DocumentManager, docClass: Ctor<T>) {
         this.dm = manager;
-        this.documentClass = documentClass;
+        this.docClass = docClass;
     }
 
     public createQueryBuilder() {
-        return this.dm.createQueryBuilder(this.documentClass);
+        return this.dm.createQueryBuilder(this.docClass);
     }
 
     public find(id: any) {

@@ -1,31 +1,33 @@
 import {Cloner} from "@sirian/clone";
 import {Obj, Var} from "@sirian/common";
 import {RuntimeError} from "@sirian/error";
+import {Ctor} from "@sirian/ts-extra-types";
 import {Condition, FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
-import {Document, IDocumentClass} from "../Schema";
 import {AbstractSelector} from "./AbstractSelector";
 import {Query} from "./Query";
 
 export type QueryObject<T, K extends keyof T = keyof T> = { [P in K]?: T[P] | Condition<T, P> };
+export type QueryOptions = FindOneOptions;
 
-export class QueryBuilder<T extends Document> extends AbstractSelector<T> {
-    protected dm: DocumentManager;
+export class QueryBuilder<T> extends AbstractSelector<T> {
+    public readonly dm: DocumentManager;
 
-    protected documentClass: IDocumentClass<T>;
+    public readonly docClass: Ctor<T>;
 
     protected currentField?: keyof T;
 
     protected queryObject: QueryObject<T>;
 
-    protected options: FindOneOptions = {};
+    protected options: QueryOptions;
 
-    constructor(dm: DocumentManager, documentClass: IDocumentClass<T>) {
+    constructor(dm: DocumentManager, docClass: Ctor<T>) {
         super();
 
         this.dm = dm;
-        this.documentClass = documentClass;
+        this.docClass = docClass;
         this.queryObject = {};
+        this.options = {};
     }
 
     public setOptions(options: FindOneOptions) {
@@ -34,11 +36,13 @@ export class QueryBuilder<T extends Document> extends AbstractSelector<T> {
     }
 
     public skip(skip: number) {
-        return this.setOptions({skip});
+        this.options.skip = skip;
+        return this;
     }
 
     public limit(limit: number) {
-        return this.setOptions({limit});
+        this.options.limit = limit;
+        return this;
     }
 
     public setQueryObject(query: QueryObject<T>) {
@@ -46,14 +50,8 @@ export class QueryBuilder<T extends Document> extends AbstractSelector<T> {
         return this;
     }
 
-    public clone() {
-        return this;
-    }
-
     public field<K extends keyof T>(field: K): this;
-
     public field<K extends keyof T>(field: K, value: T[K] | Condition<T, K>): this;
-
     public field(field: keyof T, ...args: any[]) {
         this.currentField = field;
 
@@ -66,8 +64,12 @@ export class QueryBuilder<T extends Document> extends AbstractSelector<T> {
     }
 
     public getQuery() {
-        // todo
-        return new Query(this.dm, this.documentClass);
+        return new Query({
+            dm: this.dm,
+            docClass: this.docClass,
+            queryObject: this.queryObject,
+            options: this.options,
+        });
     }
 
     public operator(op: keyof Condition<T, keyof T>, value: any) {

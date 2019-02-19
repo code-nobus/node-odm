@@ -1,22 +1,22 @@
 import {Obj, Var} from "@sirian/common";
 import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
-import {Annotations, DocumentAnnotation} from "../Annotation";
-import {AbstractDocumentAnnotation} from "../Annotation/Class/AbstractDocumentAnnotation";
+import {AbstractDocumentAnnotation, Annotations, DocumentAnnotation} from "../Annotation";
 
-export class Metadata<C extends Ctor = Ctor> {
+export class Metadata<C extends Ctor = any> {
     protected static map: WeakMap<Ctor, Metadata> = new WeakMap();
 
     public collectionName?: string;
     public dbName?: string;
-    public isDocument?: boolean;
+    public isDocument: boolean;
+    public readonly class: C;
 
     constructor(ctor: C) {
         if (!Var.isFunction(ctor)) {
             throw new InvalidArgumentError(`${ctor} is not a function`);
         }
+        this.class = ctor;
 
-        this.collectionName = ctor.name;
         this.isDocument = false;
     }
 
@@ -48,21 +48,11 @@ export class Metadata<C extends Ctor = Ctor> {
 
         if (Var.isInstanceOf(docAnnot, DocumentAnnotation)) {
             const o = docAnnot.opts;
-            meta.set({
-                isDocument: true,
-                dbName: o.db,
-                collectionName: o.collection,
-            });
+            meta.isDocument = true;
+            meta.dbName = o.db;
+            meta.collectionName = o.collection || target.name;
         }
 
         return meta;
-    }
-
-    public set(data: Partial<Metadata>) {
-        for (const [key, value] of Obj.entries(data)) {
-            if (undefined !== value) {
-                this[key] = value;
-            }
-        }
     }
 }

@@ -1,2 +1,2 @@
 export * from "./DocumentRepository";
-export * from "./RepositoryRegistry";
+export * from "./RepositoryFactory";

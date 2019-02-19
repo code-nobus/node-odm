@@ -1,9 +1,9 @@
-import {Document, ODM} from "../../../src";
+import {AbstractDoc, ODM} from "../../../src";
 import {Metadata} from "../../../src/Schema";
 
 test("", () => {
     @ODM.document
-    class User extends Document {
+    class User extends AbstractDoc {
 
     }
 
