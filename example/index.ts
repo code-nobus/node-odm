@@ -34,7 +34,7 @@ class User extends Doc {
         {active: true, username: "zoo"},
     ]);
 
-    const repo: UserRepository = dm.getRepository(User);
+    const repo = dm.getRepository(User);
     const users = await repo.findActive().getIterator();
     for await(const user of users) {
         console.log(user);
