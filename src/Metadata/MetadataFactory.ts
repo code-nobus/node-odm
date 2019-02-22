@@ -1,6 +1,6 @@
 import {Var} from "@sirian/common";
 import {Ctor} from "@sirian/ts-extra-types";
-import {AbstractDocumentAnnotation, Annotations, DocumentAnnotation} from "../Annotation";
+import {AbstractDocumentAnnotation, AnnotationRegistry, DocumentAnnotation} from "../Annotation";
 import {Metadata} from "./Metadata";
 
 export class MetadataFactory {
@@ -24,21 +24,27 @@ export class MetadataFactory {
     public static loadMetadata<C extends Ctor>(target: C) {
         const meta = new Metadata(target);
 
-        const docAnnotations = Annotations.getAnnotations(AbstractDocumentAnnotation, target);
+        this.loadDocMetadata(meta);
+
+        return meta;
+    }
+
+    protected static loadDocMetadata(meta: Metadata) {
+        const target = meta.class;
+
+        const docAnnotations = AnnotationRegistry.get(AbstractDocumentAnnotation, target);
 
         if (docAnnotations.length > 1) {
             throw new Error();
         }
 
-        const docAnnot = docAnnotations[0];
+        const annotation = docAnnotations[0];
 
-        if (Var.isInstanceOf(docAnnot, DocumentAnnotation)) {
-            const o = docAnnot.opts;
+        if (Var.isInstanceOf(annotation, DocumentAnnotation)) {
+            const o = annotation.opts;
             meta.isDocument = true;
             meta.dbName = o.db;
             meta.collectionName = o.collection || target.name;
         }
-
-        return meta;
     }
 }

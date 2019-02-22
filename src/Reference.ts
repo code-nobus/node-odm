@@ -1,8 +1,8 @@
 import {Ctor} from "@sirian/ts-extra-types";
-import {AbstractDoc} from "./Schema";
-import {Doc} from "./Schema/Doc";
+import {AbstractODMDocument} from "./Metadata";
+import {ODMDocument} from "./Metadata/ODMDocument";
 
-export class Reference<C extends Ctor<Doc>> {
+export class Reference<C extends Ctor<ODMDocument>> {
     protected docClass: C;
     protected id: any;
 

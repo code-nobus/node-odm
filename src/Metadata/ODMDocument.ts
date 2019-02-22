@@ -1,7 +1,7 @@
 import {DocumentRepository, RepositoryCtor} from "../Repository";
-import {AbstractDoc} from "./AbstractDoc";
+import {AbstractODMDocument} from "./AbstractODMDocument";
 
-export class Doc extends AbstractDoc {
+export class ODMDocument extends AbstractODMDocument {
     public getRepositoryClass(): RepositoryCtor<any> {
         return DocumentRepository as any;
     }

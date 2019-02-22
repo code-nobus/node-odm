@@ -1,24 +1,35 @@
-import {Var} from "@sirian/common";
+import {Ctor} from "@sirian/ts-extra-types";
+import * as BSON from "bson";
+import {Type} from "../../Type";
 import {PropertyAnnotation} from "./PropertyAnnotation";
+
+export type FieldType =
+    typeof String |
+    typeof Number |
+    typeof Boolean |
+    typeof Date |
+    typeof RegExp |
+    typeof Array |
+    typeof BSON.Binary |
+    typeof BSON.Code |
+    typeof BSON.DBRef |
+    typeof BSON.Double |
+    typeof BSON.Int32 |
+    typeof BSON.Long |
+    typeof BSON.MinKey |
+    typeof BSON.MaxKey |
+    typeof BSON.ObjectId |
+    typeof BSON.Timestamp |
+    typeof BSON.BSONRegExp |
+    typeof BSON.Decimal128 |
+    Ctor<Type>;
 
 export interface IFieldAnnotationOptions {
     name?: string;
-    type?: any;
+    type?: FieldType;
     nullable?: boolean;
 }
 
 export class FieldAnnotation extends PropertyAnnotation<IFieldAnnotationOptions> {
-    public static isValidFieldName(name: any): name is number | string {
-        if (Var.isNumber(name)) {
-            return true;
-        }
-        if (!Var.isString(name) || !name.length) {
-            return false;
-        }
-        return "$" !== name[0] && -1 === name.indexOf(".");
-    }
 
-    protected init() {
-
-    }
 }

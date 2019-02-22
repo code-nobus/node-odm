@@ -1,9 +1,9 @@
-import {Annotations, DocumentAnnotation, ODM} from "../../../../src";
+import {AnnotationRegistry, DocumentAnnotation, ODM} from "../../../../src";
 
 function check(ctor: any, options: any) {
     const expected = new DocumentAnnotation(ctor, options);
 
-    expect(Annotations.getAnnotations(DocumentAnnotation, ctor)).toStrictEqual([expected]);
+    expect(AnnotationRegistry.get(DocumentAnnotation, ctor)).toStrictEqual([expected]);
 }
 
 test("@ODM.document", () => {

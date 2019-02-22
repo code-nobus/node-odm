@@ -1,4 +1,4 @@
-import {Annotations, DocumentAnnotation, FieldAnnotation, ODM} from "../../../src";
+import {AnnotationRegistry, DocumentAnnotation, FieldAnnotation, ODM} from "../../../src";
 
 describe("", () => {
     @ODM.document
@@ -8,12 +8,12 @@ describe("", () => {
     }
 
     test("", () => {
-        const a = Annotations.getAnnotations(DocumentAnnotation, Foo);
+        const a = AnnotationRegistry.get(DocumentAnnotation, Foo);
         expect(a).toStrictEqual([new DocumentAnnotation(Foo)]);
     });
 
     test("", () => {
-        const foo = Annotations.getAnnotations(FieldAnnotation, Foo);
+        const foo = AnnotationRegistry.get(FieldAnnotation, Foo);
         expect(foo).toStrictEqual([new FieldAnnotation(Foo.prototype, "foo", {nullable: true})]);
     });
 
@@ -25,7 +25,7 @@ describe("", () => {
 
         }
 
-        const a = Annotations.getAnnotations(DocumentAnnotation, Bar);
+        const a = AnnotationRegistry.get(DocumentAnnotation, Bar);
         expect(a).toStrictEqual([new DocumentAnnotation(Bar, opts)]);
     });
 
@@ -39,7 +39,7 @@ describe("", () => {
 
         }
 
-        const a = Annotations.getAnnotations(DocumentAnnotation, Bar);
+        const a = AnnotationRegistry.get(DocumentAnnotation, Bar);
         expect(a).toStrictEqual([
             new DocumentAnnotation(Bar, opts1),
             new DocumentAnnotation(Bar, opts2),
@@ -51,7 +51,7 @@ describe("", () => {
 
         }
 
-        const a = Annotations.getAnnotations(FieldAnnotation, Bar);
+        const a = AnnotationRegistry.get(FieldAnnotation, Bar);
         expect(a).toHaveLength(0);
     });
 
@@ -63,7 +63,7 @@ describe("", () => {
             protected name?: string;
         }
 
-        const a = Annotations.getAnnotations(FieldAnnotation, Bar);
+        const a = AnnotationRegistry.get(FieldAnnotation, Bar);
         expect(a).toStrictEqual([new FieldAnnotation(Bar.prototype, "name", opts)]);
     });
 });

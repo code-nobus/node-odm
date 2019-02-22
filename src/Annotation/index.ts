@@ -1,4 +1,4 @@
 export * from "./Class";
 export * from "./Property";
 export * from "./Annotation";
-export * from "./Annotations";
+export * from "./AnnotationRegistry";

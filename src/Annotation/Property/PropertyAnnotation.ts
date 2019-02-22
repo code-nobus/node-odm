@@ -1,7 +1,8 @@
-import {Annotation} from "../Annotation";
-import {Annotations} from "../Annotations";
+import {Decorator} from "@sirian/decorators";
+import {Annotation, AnnotationOptions} from "../Annotation";
+import {AnnotationRegistry} from "../AnnotationRegistry";
 
-export type PropertyAnnotationCtor<O> = new(object: object, k: PropertyKey, opts?: O) => PropertyAnnotation<O>;
+export type PropertyAnnotationCtor<O = any> = new(object: object, k: PropertyKey, opts?: O) => PropertyAnnotation<O>;
 
 export class PropertyAnnotation<O = any> extends Annotation<O> {
     public readonly proto: object;
@@ -14,9 +15,12 @@ export class PropertyAnnotation<O = any> extends Annotation<O> {
         this.propertyKey = propertyKey;
     }
 
-    public static decorate<O>(this: PropertyAnnotationCtor<O>, opts?: O) {
-        return (proto: object, propertyKey: PropertyKey) => {
-            Annotations.add(new this(proto, propertyKey, opts));
-        };
+    public static createDecorator<C extends PropertyAnnotationCtor>(this: C) {
+        return Decorator.forProperty((opts?: AnnotationOptions<InstanceType<C>>) => {
+            return (proto: object, propertyKey: PropertyKey) => {
+                const annotation = new this(proto, propertyKey, opts);
+                AnnotationRegistry.add(annotation);
+            };
+        });
     }
 }

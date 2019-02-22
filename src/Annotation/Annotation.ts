@@ -1,3 +1,5 @@
+export type AnnotationOptions<A extends Annotation> = A extends Annotation<infer O> ? O : never;
+
 export abstract class Annotation<O = any> {
     public readonly class: Function;
     public readonly opts: Partial<O>;
@@ -7,10 +9,6 @@ export abstract class Annotation<O = any> {
         this.opts = {...opts};
 
         this.init();
-    }
-
-    public static decorate(): ClassDecorator | MethodDecorator | PropertyDecorator | ParameterDecorator | void {
-
     }
 
     protected init() {

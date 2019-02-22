@@ -1,9 +1,9 @@
-import {Annotations, FieldAnnotation, ODM} from "../../../../src";
+import {AnnotationRegistry, FieldAnnotation, ODM} from "../../../../src";
 
 function check(ctor: any, options: any) {
     const expected = new FieldAnnotation(ctor.prototype, "foo", options);
 
-    expect(Annotations.getPropertyAnnotations(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
+    expect(AnnotationRegistry.get(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
 }
 
 test("@ODM.field", () => {

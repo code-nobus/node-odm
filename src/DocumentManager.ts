@@ -1,41 +1,22 @@
 import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
-import {MongoClient, MongoClientOptions} from "mongodb";
+import {MongoClient} from "mongodb";
+import {Configuration} from "./Configuration";
+import {MetadataFactory, ODMDocument} from "./Metadata";
 import {QueryBuilder} from "./Query";
-import {RepositoryFactory} from "./Repository";
-import {Doc, Metadata} from "./Schema";
-import {MetadataFactory} from "./Schema/MetadataFactory";
+import {RepositoryType} from "./Repository";
 
-export interface IDocumentManagerOptions {
-    url: string;
-    options: MongoClientOptions;
-}
+export class DocumentManager<T extends ODMDocument = any> {
+    protected configuration: Configuration;
+    protected client: MongoClient;
 
-export class DocumentManager<T extends Doc = any> {
-    public readonly repositoryFactory: RepositoryFactory;
-    protected options: IDocumentManagerOptions;
-    protected client?: Promise<MongoClient>;
-
-    constructor(init: Partial<IDocumentManagerOptions> = {}) {
-        this.repositoryFactory = new RepositoryFactory(this);
-        this.options = {
-            url: "mongodb://127.0.0.1:27017",
-            options: {
-                useNewUrlParser: true,
-            },
-            ...init,
-        };
+    constructor(configuration?: Configuration, client?: MongoClient) {
+        this.configuration = configuration || new Configuration();
+        this.client = client || new MongoClient("mongodb://127.0.0.1:27017");
     }
 
-    public async getClient() {
-        if (!this.client) {
-            this.client = MongoClient.connect(this.options.url, this.options.options);
-        }
-        return this.client;
-    }
-
-    public async getCollection<C extends Ctor<T>>(docClass: C) {
-        const db = await this.getDocumentDatabase(docClass);
+    public getCollection<C extends Ctor<T>>(docClass: C) {
+        const db = this.getDocumentDatabase(docClass);
         const meta = this.getMetadata(docClass);
         const name = meta.collectionName;
         if (!name) {
@@ -44,22 +25,22 @@ export class DocumentManager<T extends Doc = any> {
         return db.collection(name);
     }
 
-    public async getDocumentDatabase<C extends Ctor<T>>(docClass: C) {
+    public getDocumentDatabase<C extends Ctor<T>>(docClass: C) {
         const meta = this.getMetadata(docClass);
+
         if (!meta.isDocument) {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
         }
 
-        const client = await this.getClient();
-        return client.db(meta.dbName!);
+        return this.client.db(meta.dbName!);
     }
 
     public createQueryBuilder<C extends Ctor<T>>(docClass: C): QueryBuilder<InstanceType<C>> {
         return new QueryBuilder(this, docClass) as any;
     }
 
-    public getRepository<C extends Ctor<T>>(docClass: C) {
-        return this.repositoryFactory.get(docClass);
+    public getRepository<C extends Ctor<T>>(docClass: C): RepositoryType<C> {
+        return this.configuration.repositoryFactory.getRepository(this, docClass);
     }
 
     public async close() {

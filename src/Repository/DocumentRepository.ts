@@ -3,12 +3,12 @@ import {Ctor} from "@sirian/ts-extra-types";
 import {FindOneOptions} from "mongodb";
 import {DocumentManager} from "../DocumentManager";
 
-import {Doc} from "../Schema";
+import {ODMDocument} from "../Metadata";
 
-export type RepositoryCtor<T extends Doc> = new(manager: DocumentManager, docClass: Ctor<T>) => DocumentRepository<T>;
-export type RepositoryType<C extends Ctor<Doc>> = InstanceType<ReturnType<InstanceType<C>["getRepositoryClass"]>>;
+export type RepositoryCtor<T extends ODMDocument> = new(manager: DocumentManager, docClass: Ctor<T>) => DocumentRepository<T>;
+export type RepositoryType<C extends Ctor<ODMDocument>> = InstanceType<ReturnType<InstanceType<C>["getRepositoryClass"]>>;
 
-export class DocumentRepository<T extends Doc = any> {
+export class DocumentRepository<T extends ODMDocument = any> {
     public readonly dm: DocumentManager;
 
     public readonly docClass: Ctor<T>;

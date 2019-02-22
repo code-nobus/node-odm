@@ -1,5 +1,3 @@
-export abstract class Type<TMongo = any, TModel = any> {
-    public abstract transformToMongo(value: TModel): TMongo;
+export class Type<TMongo = any, TModel = any> {
 
-    public abstract transformToModel(value: TMongo): TModel;
 }
