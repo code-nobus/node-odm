@@ -1,8 +1,7 @@
 import {DocumentRepository, ICustomRepository, ODM} from "../../../src";
-import {TestODM} from "../../TestODM";
 
 describe("", () => {
-    const odm = new TestODM();
+    const odm = new ODM();
 
     const factory = odm.repositoryFactory;
 

@@ -1,5 +1,4 @@
 import {ODM} from "../../../src";
-import {TestODM} from "../../TestODM";
 
 test("", async () => {
     @ODM.document
@@ -8,7 +7,7 @@ test("", async () => {
         public foo!: number;
     }
 
-    const odm = new TestODM();
+    const odm = new ODM();
 
     const dm = await odm.getManager();
     const qb = dm
