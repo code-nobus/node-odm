@@ -6,17 +6,17 @@ export interface ISessionFactory {
 }
 
 export class SessionFactory implements ISessionFactory {
-    protected clientPromise: Promise<MongoClient>;
+    protected client: MongoClient;
 
-    public constructor(client: Promise<MongoClient>) {
-        this.clientPromise = client;
+    public constructor(client?: MongoClient) {
+        this.client = client || new MongoClient("mongodb://127.0.0.1", {
+            useNewUrlParser: true,
+        });
     }
 
     public async getSession() {
-        const client = await this.clientPromise;
-
         return new Session({
-            client,
+            client: this.client,
         });
     }
 }

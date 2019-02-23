@@ -1,10 +1,10 @@
 import {DocumentAnnotation, FieldAnnotation} from "./Annotation";
 import {ManagerFactory} from "./ManagerFactory";
 import {RepositoryFactory} from "./Repository";
-import {ISessionFactory} from "./SessionFactory";
+import {ISessionFactory, SessionFactory} from "./SessionFactory";
 
 export interface IODMInit {
-    sessionFactory: ISessionFactory;
+    sessionFactory?: ISessionFactory;
     managerFactory?: ManagerFactory;
     repositoryFactory?: RepositoryFactory;
 }
@@ -17,8 +17,8 @@ export class ODM {
     public readonly sessionFactory: ISessionFactory;
     public readonly repositoryFactory: RepositoryFactory;
 
-    constructor(init: IODMInit) {
-        this.sessionFactory = init.sessionFactory;
+    constructor(init: IODMInit = {}) {
+        this.sessionFactory = init.sessionFactory || new SessionFactory();
         this.managerFactory = init.managerFactory || new ManagerFactory();
         this.repositoryFactory = init.repositoryFactory || new RepositoryFactory();
     }
