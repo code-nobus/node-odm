@@ -1,15 +1,16 @@
-import {DocumentManager, DocumentRepository, ODM, ODMDocument} from "../../../src";
-import {Configuration} from "../../../src/Configuration";
+import {DocumentRepository, ICustomRepository, ODM} from "../../../src";
+import {TestODM} from "../../TestODM";
 
 describe("", () => {
-    const config = new Configuration();
-    const dm = new DocumentManager(config);
-    const factory = config.repositoryFactory;
+    const odm = new TestODM();
 
-    test("#getRepository", () => {
+    const factory = odm.repositoryFactory;
+
+    test("#getRepository", async () => {
         @ODM.document
-        class Post extends ODMDocument {}
+        class Post {}
 
+        const dm = await odm.getManager();
         const repo = factory.getRepository(dm, Post);
         const repo2 = factory.getRepository(dm, Post);
         expect(repo).toBeInstanceOf(DocumentRepository);
@@ -17,7 +18,7 @@ describe("", () => {
         expect(repo.docClass).toBe(Post);
     });
 
-    test("#getRepository custom repository", () => {
+    test("#getRepository custom repository", async () => {
         class UserRepository extends DocumentRepository<User> {
             public foo() {
                 return "bar";
@@ -25,11 +26,13 @@ describe("", () => {
         }
 
         @ODM.document({})
-        class User extends ODMDocument {
+        class User implements ICustomRepository {
             public getRepositoryClass() {
                 return UserRepository;
             }
         }
+
+        const dm = await odm.getManager();
 
         const repo = factory.getRepository(dm, User);
         const repo2 = factory.getRepository(dm, User);
@@ -40,13 +43,14 @@ describe("", () => {
         expect(repo.foo()).toBe("bar");
     });
 
-    test("#getRepository different dm", () => {
+    test("#getRepository different dm", async () => {
         @ODM.document
-        class Post extends ODMDocument {}
+        class Post {}
 
-        const dm2 = new DocumentManager(config);
+        const dm1 = await odm.getManager();
+        const dm2 = await odm.getManager();
 
-        const repo1 = factory.getRepository(dm, Post);
+        const repo1 = factory.getRepository(dm1, Post);
         const repo2 = factory.getRepository(dm2, Post);
 
         expect(repo1).toBeInstanceOf(DocumentRepository);

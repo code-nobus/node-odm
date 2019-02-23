@@ -24,7 +24,7 @@ after_script:
 
 after_success:
     - cat ./coverage/lcov.info | yarn coveralls
-    - yarn travis-deploy-once "yarn semantic-release"
+    - yarn semantic-release
 
 branches:
     except:

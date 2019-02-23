@@ -1,5 +1,3 @@
-export * from "./AbstractODMDocument";
-export * from "./ODMDocument";
-export * from "./ODMEmbeddedDocument";
+export * from "./Field";
 export * from "./Metadata";
 export * from "./MetadataFactory";

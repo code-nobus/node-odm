@@ -1,13 +1,16 @@
-import {DocumentManager, ODM} from "../../../src";
+import {ODM} from "../../../src";
+import {TestODM} from "../../TestODM";
 
-test("", () => {
+test("", async () => {
     @ODM.document
     class Foo {
         @ODM.field
         public foo!: number;
     }
 
-    const dm = new DocumentManager();
+    const odm = new TestODM();
+
+    const dm = await odm.getManager();
     const qb = dm
         .createQueryBuilder(Foo)
         .field("foo").gt(2).lt(3)

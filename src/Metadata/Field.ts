@@ -1,6 +1,6 @@
 import {Var} from "@sirian/common";
 
-class Field {
+export class Field {
     public static isValidFieldName(name: any): name is number | string {
         if (Var.isNumber(name)) {
             return true;

@@ -1,5 +1,5 @@
 import {MongoClient} from "mongodb";
-import {Configuration, DocumentManager, DocumentRepository, ODM, ODMDocument} from "../src";
+import {DocumentRepository, ICustomRepository, ODM, SessionFactory} from "../src";
 
 class UserRepository extends DocumentRepository<User> {
     public findActive() {
@@ -13,7 +13,7 @@ class UserRepository extends DocumentRepository<User> {
 @ODM.document({
     collection: "users",
 })
-class User extends ODMDocument {
+class User implements ICustomRepository {
     @ODM.field
     public active: boolean = false;
 
@@ -26,13 +26,18 @@ class User extends ODMDocument {
     const client = await MongoClient.connect("mongodb://127.0.0.1:27017/test", {
         useNewUrlParser: true,
     });
-    const config = new Configuration();
-    const dm = new DocumentManager(config, client);
 
-    const users = dm.getRepository(User).findActive().getIterator();
+    const odm = new ODM({
+        sessionFactory: new SessionFactory(client),
+    });
+
+    const dm = await odm.getManager();
+
+    const repo = dm.getRepository(User);
+    const users = repo.findActive().getIterator();
     for await(const user of users) {
         console.log(user);
     }
 
-    await dm.close();
+    await client.close();
 })();

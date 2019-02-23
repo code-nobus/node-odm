@@ -2,11 +2,21 @@ import {Var} from "@sirian/common";
 import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
 import {DocumentManager} from "../DocumentManager";
-import {ODMDocument} from "../Metadata";
-import {DocumentRepository, RepositoryType} from "./DocumentRepository";
+import {DocumentRepository} from "./DocumentRepository";
+
+export type RepositoryCtor = Ctor<DocumentRepository, [DocumentManager, Ctor]>;
+
+export type RepositoryType<T> =
+    T extends ICustomRepository
+    ? InstanceType<ReturnType<T["getRepositoryClass"]>>
+    : DocumentRepository<T>;
+
+export interface ICustomRepository {
+    getRepositoryClass(): RepositoryCtor;
+}
 
 export class RepositoryFactory {
-    protected readonly map: WeakMap<DocumentManager, WeakMap<Ctor<ODMDocument>, DocumentRepository<any>>>;
+    protected readonly map: WeakMap<DocumentManager, WeakMap<Ctor, DocumentRepository>>;
 
     constructor() {
         this.map = new WeakMap();
@@ -20,7 +30,7 @@ export class RepositoryFactory {
             map.set(docClass, repo);
         }
 
-        return map.get(docClass)! as RepositoryType<C>;
+        return map.get(docClass)! as RepositoryType<InstanceType<C>>;
     }
 
     protected getDocumentManagerRepositories(dm: DocumentManager) {
@@ -31,21 +41,25 @@ export class RepositoryFactory {
         return map.get(dm)!;
     }
 
-    protected createRepository<C extends Ctor>(dm: DocumentManager<InstanceType<C>>, docClass: C) {
+    protected createRepository<T extends Partial<ICustomRepository>>(dm: DocumentManager<T>, docClass: Ctor<T>) {
         const meta = dm.getMetadata(docClass);
 
         if (!meta.isDocument) {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
         }
 
-        const proto = docClass.prototype;
+        const proto = docClass.prototype as T;
 
-        const ctor = proto.getRepositoryClass();
+        if (Var.isFunction(proto.getRepositoryClass)) {
+            const ctor = proto.getRepositoryClass();
 
-        if (!Var.isSubclassOf(ctor, DocumentRepository)) {
-            throw new InvalidArgumentError("getRepositoryClass() should return class extending DocumentRepository");
+            if (!Var.isSubclassOf(ctor, DocumentRepository)) {
+                throw new InvalidArgumentError("getRepositoryClass() should return class extending DocumentRepository");
+            }
+
+            return new ctor(dm, docClass);
         }
 
-        return new ctor(dm, docClass) as RepositoryType<C>;
+        return new DocumentRepository(dm, docClass);
     }
 }

@@ -1,18 +1,22 @@
 import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
-import {MongoClient} from "mongodb";
-import {Configuration} from "./Configuration";
-import {MetadataFactory, ODMDocument} from "./Metadata";
+import {MetadataFactory} from "./Metadata";
 import {QueryBuilder} from "./Query";
-import {RepositoryType} from "./Repository";
+import {RepositoryFactory} from "./Repository";
+import {Session} from "./Session";
 
-export class DocumentManager<T extends ODMDocument = any> {
-    protected configuration: Configuration;
-    protected client: MongoClient;
+export interface IDocumentManagerInit {
+    repositoryFactory: RepositoryFactory;
+    session: Session;
+}
 
-    constructor(configuration?: Configuration, client?: MongoClient) {
-        this.configuration = configuration || new Configuration();
-        this.client = client || new MongoClient("mongodb://127.0.0.1:27017");
+export class DocumentManager<T = any> {
+    protected repositoryFactory: RepositoryFactory;
+    protected session: Session;
+
+    constructor(init: IDocumentManagerInit) {
+        this.repositoryFactory = init.repositoryFactory;
+        this.session = init.session;
     }
 
     public getCollection<C extends Ctor<T>>(docClass: C) {
@@ -32,23 +36,15 @@ export class DocumentManager<T extends ODMDocument = any> {
             throw new InvalidArgumentError(`${docClass} is not ODM.document`);
         }
 
-        return this.client.db(meta.dbName!);
+        return this.session.getDatabase(meta.dbName);
     }
 
     public createQueryBuilder<C extends Ctor<T>>(docClass: C): QueryBuilder<InstanceType<C>> {
         return new QueryBuilder(this, docClass) as any;
     }
 
-    public getRepository<C extends Ctor<T>>(docClass: C): RepositoryType<C> {
-        return this.configuration.repositoryFactory.getRepository(this, docClass);
-    }
-
-    public async close() {
-        if (!this.client) {
-            return;
-        }
-        const client = await this.client;
-        await client.close();
+    public getRepository<C extends Ctor<T>>(docClass: C) {
+        return this.repositoryFactory.getRepository(this, docClass);
     }
 
     public clear(ctor: Ctor<T>): void {
