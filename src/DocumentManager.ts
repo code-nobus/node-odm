@@ -2,7 +2,7 @@ import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
 import {MetadataFactory} from "./Metadata";
 import {QueryBuilder} from "./Query";
-import {RepositoryFactory} from "./Repository";
+import {RepositoryFactory, RepositoryType} from "./Repository";
 import {Session} from "./Session";
 
 export interface IDocumentManagerInit {
@@ -43,7 +43,7 @@ export class DocumentManager<T = any> {
         return new QueryBuilder(this, docClass) as any;
     }
 
-    public getRepository<C extends Ctor<T>>(docClass: C) {
+    public getRepository<C extends Ctor<T>>(docClass: C): RepositoryType<InstanceType<C>> {
         return this.repositoryFactory.getRepository(this, docClass);
     }
 

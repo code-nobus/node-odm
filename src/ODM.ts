@@ -23,12 +23,20 @@ export class ODM {
         this.repositoryFactory = init.repositoryFactory || new RepositoryFactory();
     }
 
-    public async getManager() {
-        const session = await this.sessionFactory.getSession();
+    public getManager() {
+        const session = this.sessionFactory.getSession();
 
         return this.managerFactory.getManager({
             session,
             repositoryFactory: this.repositoryFactory,
         });
+    }
+
+    public async connect() {
+        await this.sessionFactory.connect();
+    }
+
+    public async destroy() {
+        await this.sessionFactory.destroy();
     }
 }
