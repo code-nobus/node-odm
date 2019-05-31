@@ -10,7 +10,7 @@ export interface IDocumentManagerInit {
     session: Session;
 }
 
-export class DocumentManager<T extends ICustomRepository = ICustomRepository> {
+export class DocumentManager<T extends any = any> {
     protected repositoryFactory: RepositoryFactory;
     protected session: Session;
 

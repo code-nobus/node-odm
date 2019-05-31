@@ -10,7 +10,7 @@ export interface ICustomRepository {
     getRepositoryClass(): RepositoryCtor;
 }
 
-export type RepositoryType<T extends ICustomRepository> =
+export type RepositoryType<T extends any> =
     T extends ICustomRepository
     ? InstanceType<ReturnType<T["getRepositoryClass"]>>
     : DocumentRepository<T>;
