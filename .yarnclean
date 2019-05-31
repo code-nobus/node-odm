@@ -50,8 +50,10 @@ doc
 # misc
 *.md
 LICENSE*
+MIT-LICENSE*
 license*
 README*
 readme*
 yarn-error.log
 AUTHORS
+.DS_Store
