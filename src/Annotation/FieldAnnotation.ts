@@ -1,7 +1,7 @@
+import {IPropertyAnnotationContext, PropertyAnnotation} from "@sirian/annotations";
 import {Ctor} from "@sirian/ts-extra-types";
 import * as BSON from "bson";
-import {Type} from "../../Type";
-import {PropertyAnnotation} from "./PropertyAnnotation";
+import {Type} from "../Type";
 
 export type FieldType =
     typeof String |
@@ -30,6 +30,11 @@ export interface IFieldAnnotationOptions {
     nullable?: boolean;
 }
 
-export class FieldAnnotation extends PropertyAnnotation<IFieldAnnotationOptions> {
+export class FieldAnnotation extends PropertyAnnotation {
+    public readonly options: IFieldAnnotationOptions;
 
+    constructor(ctx: IPropertyAnnotationContext, options: IFieldAnnotationOptions = {}) {
+        super(ctx);
+        this.options = options;
+    }
 }

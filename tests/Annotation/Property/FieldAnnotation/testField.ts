@@ -1,19 +1,11 @@
-import {AnnotationRegistry, FieldAnnotation, ODM} from "../../../../src";
+import {Annotations} from "@sirian/annotations";
+import {FieldAnnotation, ODM} from "../../../../src";
 
 function check(ctor: any, options: any) {
-    const expected = new FieldAnnotation(ctor.prototype, "foo", options);
+    const expected = FieldAnnotation.create([ctor.prototype, "foo"], [options]);
 
-    expect(AnnotationRegistry.get(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
+    expect(Annotations.get(FieldAnnotation, ctor, "foo")).toStrictEqual([expected]);
 }
-
-test("@ODM.field", () => {
-    class User {
-        @ODM.field
-        protected foo?: string;
-    }
-
-    check(User, {});
-});
 
 test("@ODM.field()", () => {
     class User {

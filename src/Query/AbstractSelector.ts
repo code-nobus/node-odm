@@ -73,8 +73,6 @@ export abstract class AbstractSelector<T = any> {
     @AbstractSelector.operator
     public nin<K extends keyof T>(values: Array<T[K]>) { return this; }
 
-    // </editor-fold>
-
     /**
      * https://docs.mongodb.com/manual/reference/operator/query/comment/
      */

@@ -6,12 +6,14 @@ describe("", () => {
     const factory = odm.repositoryFactory;
 
     test("#getRepository", async () => {
-        @ODM.document
-        class Post {}
+        @ODM.document()
+        class Post {
+        }
 
         const dm = await odm.getManager();
         const repo = factory.getRepository(dm, Post);
         const repo2 = factory.getRepository(dm, Post);
+
         expect(repo).toBeInstanceOf(DocumentRepository);
         expect(repo2).toBe(repo);
         expect(repo.docClass).toBe(Post);
@@ -43,8 +45,9 @@ describe("", () => {
     });
 
     test("#getRepository different dm", async () => {
-        @ODM.document
-        class Post {}
+        @ODM.document()
+        class Post {
+        }
 
         const dm1 = await odm.getManager();
         const dm2 = await odm.getManager();

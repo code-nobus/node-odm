@@ -1,3 +1,3 @@
-export * from "./Field";
+export * from "./IFieldMapping";
 export * from "./Metadata";
 export * from "./MetadataFactory";

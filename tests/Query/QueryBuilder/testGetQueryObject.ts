@@ -1,9 +1,9 @@
 import {ODM} from "../../../src";
 
 test("", async () => {
-    @ODM.document
+    @ODM.document()
     class Foo {
-        @ODM.field
+        @ODM.field()
         public foo!: number;
     }
 

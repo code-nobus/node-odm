@@ -10,8 +10,8 @@ export interface IODMInit {
 }
 
 export class ODM {
-    public static readonly document = DocumentAnnotation.createDecorator();
-    public static readonly field = FieldAnnotation.createDecorator();
+    public static readonly document = DocumentAnnotation.getDecorator();
+    public static readonly field = FieldAnnotation.getDecorator();
 
     public readonly managerFactory: ManagerFactory;
     public readonly sessionFactory: ISessionFactory;

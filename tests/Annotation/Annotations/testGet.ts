@@ -1,20 +1,21 @@
-import {AnnotationRegistry, DocumentAnnotation, FieldAnnotation, ODM} from "../../../src";
+import {Annotations} from "@sirian/annotations";
+import {DocumentAnnotation, FieldAnnotation, ODM} from "../../../src";
 
 describe("", () => {
-    @ODM.document
+    @ODM.document()
     class Foo {
         @ODM.field({nullable: true})
         protected foo?: string;
     }
 
     test("", () => {
-        const a = AnnotationRegistry.get(DocumentAnnotation, Foo);
-        expect(a).toStrictEqual([new DocumentAnnotation(Foo)]);
+        const a = Annotations.getFirst(DocumentAnnotation, Foo)!;
+        expect(a.options).toStrictEqual({});
     });
 
     test("", () => {
-        const foo = AnnotationRegistry.get(FieldAnnotation, Foo);
-        expect(foo).toStrictEqual([new FieldAnnotation(Foo.prototype, "foo", {nullable: true})]);
+        const a = Annotations.getFirst(FieldAnnotation, Foo)!;
+        expect(a.options).toStrictEqual({nullable: true});
     });
 
     test("", () => {
@@ -25,8 +26,8 @@ describe("", () => {
 
         }
 
-        const a = AnnotationRegistry.get(DocumentAnnotation, Bar);
-        expect(a).toStrictEqual([new DocumentAnnotation(Bar, opts)]);
+        const a = Annotations.getFirst(DocumentAnnotation, Bar)!;
+        expect(a.options).toStrictEqual(opts);
     });
 
     test("", () => {
@@ -39,10 +40,11 @@ describe("", () => {
 
         }
 
-        const a = AnnotationRegistry.get(DocumentAnnotation, Bar);
+        const a = Annotations.get(DocumentAnnotation, Bar);
+
         expect(a).toStrictEqual([
-            new DocumentAnnotation(Bar, opts1),
-            new DocumentAnnotation(Bar, opts2),
+            DocumentAnnotation.create([Bar], [opts1]),
+            DocumentAnnotation.create([Bar], [opts2]),
         ]);
     });
 
@@ -51,7 +53,7 @@ describe("", () => {
 
         }
 
-        const a = AnnotationRegistry.get(FieldAnnotation, Bar);
+        const a = Annotations.get(FieldAnnotation, Bar);
         expect(a).toHaveLength(0);
     });
 
@@ -63,7 +65,7 @@ describe("", () => {
             protected name?: string;
         }
 
-        const a = AnnotationRegistry.get(FieldAnnotation, Bar);
-        expect(a).toStrictEqual([new FieldAnnotation(Bar.prototype, "name", opts)]);
+        const a = Annotations.getFirst(FieldAnnotation, Bar)!;
+        expect(a.options).toStrictEqual(opts);
     });
 });

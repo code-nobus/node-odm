@@ -4,7 +4,7 @@ import {ODM} from "../src";
     collection: "users",
 })
 class User {
-    @ODM.field
+    @ODM.field()
     public active: boolean = false;
 }
 

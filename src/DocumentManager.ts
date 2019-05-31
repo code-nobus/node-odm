@@ -47,10 +47,10 @@ export class DocumentManager<T extends ICustomRepository = ICustomRepository> {
         return this.repositoryFactory.getRepository(this, docClass);
     }
 
-    public clear(ctor: Ctor<T>): void {
+    public clear<C extends Ctor<T>>(ctor: C) {
     }
 
-    public detach(object: T): void {
+    public detach(object: T) {
     }
 
     public async flush() {
