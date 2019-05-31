@@ -22,6 +22,9 @@ Makefile
 Gulpfile.js
 Gruntfile.js
 
+#sources
+*.coffee
+
 # configs
 appveyor.yml
 circle.yml
@@ -39,9 +42,16 @@ wercker.yml
 .yarn-metadata.json
 .travis.yml
 
+#man
+man
+docs
+doc
+
 # misc
 *.md
-LICENSE
-license
-README
-readme
+LICENSE*
+license*
+README*
+readme*
+yarn-error.log
+AUTHORS
