@@ -1,4 +1,4 @@
-import {Cloneable, Cloner} from "@sirian/clone";
+import {Cloneable, Cloner, cloneSymbol} from "@sirian/clone";
 import {Condition} from "mongodb";
 import {AbstractSelector} from "./AbstractSelector";
 
@@ -9,7 +9,7 @@ export class Selector<T = any, K extends keyof T = keyof T> extends AbstractSele
         super();
     }
 
-    public clone() {
+    public [cloneSymbol]() {
         this.queryObject = Cloner.clone(this.queryObject);
     }
 

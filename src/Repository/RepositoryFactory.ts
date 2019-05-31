@@ -6,14 +6,14 @@ import {DocumentRepository} from "./DocumentRepository";
 
 export type RepositoryCtor = Ctor<DocumentRepository, [DocumentManager, Ctor]>;
 
-export type RepositoryType<T> =
-    T extends ICustomRepository
-    ? InstanceType<ReturnType<T["getRepositoryClass"]>>
-    : DocumentRepository<T>;
-
 export interface ICustomRepository {
     getRepositoryClass(): RepositoryCtor;
 }
+
+export type RepositoryType<T extends ICustomRepository> =
+    T extends ICustomRepository
+    ? InstanceType<ReturnType<T["getRepositoryClass"]>>
+    : DocumentRepository<T>;
 
 export class RepositoryFactory {
     protected readonly map: WeakMap<DocumentManager, WeakMap<Ctor, DocumentRepository>>;

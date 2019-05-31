@@ -2,7 +2,7 @@ import {InvalidArgumentError} from "@sirian/error";
 import {Ctor} from "@sirian/ts-extra-types";
 import {MetadataFactory} from "./Metadata";
 import {QueryBuilder} from "./Query";
-import {RepositoryFactory, RepositoryType} from "./Repository";
+import {ICustomRepository, RepositoryFactory, RepositoryType} from "./Repository";
 import {Session} from "./Session";
 
 export interface IDocumentManagerInit {
@@ -10,7 +10,7 @@ export interface IDocumentManagerInit {
     session: Session;
 }
 
-export class DocumentManager<T = any> {
+export class DocumentManager<T extends ICustomRepository = ICustomRepository> {
     protected repositoryFactory: RepositoryFactory;
     protected session: Session;
 
